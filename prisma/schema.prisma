@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  email         String     @unique
+  password      String?
+  name          String
+  role          Role       @default(USER)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  balance       Float      @default(0)
+  records       Record[]
+  categories    Category[]
+  provider      String?
+  emailVerified Boolean    @default(false)
+  image         String?
+  sessions      Session[]
+  accounts      Account[]
+
+  @@map("user")
+}
+
+model Record {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  amount       Float
+  targetAmount Float?
+  description  String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  userId       String    @db.ObjectId
+  user         User      @relation(fields: [userId], references: [id])
+  category     Category? @relation(fields: [categoryId], references: [id])
+  categoryId   String?   @db.ObjectId
+  type         Type      @default(INCOME)
+
+  @@index([userId])
+  @@index([categoryId])
+  @@index([type])
+}
+
+model Category {
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  name          String     @unique
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  createdBy     User       @relation(fields: [createdById], references: [id])
+  createdById   String     @db.ObjectId
+  expenses      Record[]
+  subCategories Category[] @relation("ParentCategory")
+  parentId      String?    @db.ObjectId
+  parent        Category?  @relation("ParentCategory", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  type          Type
+
+  @@index([createdById])
+  @@index([parentId])
+  @@index([type])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Type {
+  INCOME
+  EXPENSE
+  SAVING
+  TRANSFER
+  ALLOCATION
+}
+
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String   @db.ObjectId
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.String
+  access_token      String? @db.String
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.String
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("account")
+}
+
+model VerificationToken {
+  identifier String   @id @map("_id")
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_token")
+}

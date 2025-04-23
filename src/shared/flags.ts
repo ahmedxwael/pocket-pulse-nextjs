@@ -1,0 +1,12 @@
+export const __DEV__ = process.env.NODE_ENV === "development";
+export const appName = process.env.NEXT_PUBLIC_APP_NAME;
+export const appDescription = process.env.NEXT_PUBLIC_APP_DESCRIPTION;
+export const appVersion = process.env.NEXT_PUBLIC_APP_VERSION;
+export const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+export const nextAuthUrl = process.env.NEXTAUTH_URL;
+export const nextAuthInternalUrl = process.env.NEXTAUTH_INTERNAL_URL;
+export const nextAuthSecret = process.env.AUTH_SECRET;
+export const googleClientId = process.env.AUTH_GOOGLE_ID;
+export const googleClientSecret = process.env.AUTH_GOOGLE_SECRET;
+export const githubClientId = process.env.AUTH_GITHUB_ID;
+export const githubClientSecret = process.env.AUTH_GITHUB_SECRET;
