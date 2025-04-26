@@ -6,6 +6,7 @@ import { Button } from "@/design-system/components/ui/button";
 import { GithubIcon, GoogleIcon } from "@/design-system/icons";
 import { appName } from "@/shared/flags";
 import { URLS } from "@/shared/urls";
+import { Loader } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -25,6 +26,12 @@ export function SignInForm() {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleLogin = async (provider: "google" | "github") => {
+    setIsLoading(true);
+    await loginAction(provider);
+    setIsLoading(false);
+  };
 
   return (
     <div className="flex flex-col gap-4 max-w-full w-md">
@@ -64,26 +71,26 @@ export function SignInForm() {
             <Button
               variant="outline"
               className="w-full flex items-center gap-2"
-              onClick={async () => {
-                setIsLoading(true);
-                await loginAction("github");
-                setIsLoading(false);
-              }}
+              onClick={() => handleLogin("github")}
               disabled={isLoading}>
               <GithubIcon />
-              {isLoading ? "Loading..." : "Continue with Github"}
+              {isLoading ? (
+                <Loader className="animate-spin" />
+              ) : (
+                "Continue with Github"
+              )}
             </Button>
             <Button
               variant="outline"
               className="w-full flex items-center gap-2"
-              onClick={async () => {
-                setIsLoading(true);
-                await loginAction("google");
-                setIsLoading(false);
-              }}
+              onClick={() => handleLogin("google")}
               disabled={isLoading}>
               <GoogleIcon />
-              {isLoading ? "Loading..." : "Continue with Google"}
+              {isLoading ? (
+                <Loader className="animate-spin" />
+              ) : (
+                "Continue with Google"
+              )}
             </Button>
           </div>
         </div>

@@ -4,10 +4,13 @@ import { cn } from "@/lib/utils";
 import { URLS } from "@/shared/urls";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Tooltip } from "../Tooltip";
 
 type NavLinksProps = {
   className?: string;
+  styles?: {
+    root?: string;
+    link?: string;
+  };
 };
 
 const navLinks = [
@@ -21,26 +24,25 @@ const navLinks = [
   },
 ];
 
-export function NavLinks({ className }: NavLinksProps) {
+export function NavLinks({ className, styles }: NavLinksProps) {
   const pathname = usePathname();
 
   return (
-    <ul className={cn("flex items-center gap-6", className)}>
+    <ul className={cn("flex items-center gap-6", className, styles?.root)}>
       {navLinks.map((link) => {
         const active = link.href === pathname;
 
         return (
-          <li key={link.name}>
-            <Tooltip content={link.name}>
-              <Link
-                href={link.href}
-                className={cn(
-                  "capitalize font-medium transition-colors text-muted-foreground hover:text-primary",
-                  active ? "text-primary" : ""
-                )}>
-                {link.name}
-              </Link>
-            </Tooltip>
+          <li key={link.name} className="w-full">
+            <Link
+              href={link.href}
+              className={cn(
+                "capitalize inline-block font-medium p-2 transition-colors text-muted-foreground hover:text-primary",
+                active ? "text-primary" : "",
+                styles?.link
+              )}>
+              {link.name}
+            </Link>
           </li>
         );
       })}

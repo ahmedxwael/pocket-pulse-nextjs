@@ -1,6 +1,6 @@
 "use client";
 
-import { Tabs } from "@/design-system/components/Tabs";
+import { Tabs } from "@/design-system/components";
 import {
   ChartConfig,
   ChartContainer,

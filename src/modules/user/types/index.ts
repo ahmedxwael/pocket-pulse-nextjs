@@ -6,25 +6,22 @@ export type User = {
   password: string;
   name: string;
   role: Role;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
   balance: number;
-  records: Record[];
-  categories: Category[];
+  incomesCount: number;
+  expensesCount: number;
+  records?: Record[];
+  categories?: Category[];
   provider: string;
-  emailVerified: boolean;
+  emailVerified: Date;
+  isVerified: boolean;
   image: string;
 };
 
 export type Role = "USER" | "ADMIN";
 
 export type UserSession = {
-  id: string;
-  name: string;
-  email: string;
-  image: string | null;
-  role: Role;
-  balance: number;
-  isVerified: boolean;
-  createdAt: Date;
+  user: User;
+  expires: string;
 } | null;

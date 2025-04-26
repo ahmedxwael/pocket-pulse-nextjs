@@ -1,32 +1,13 @@
 import { cn } from "@/lib/utils";
+import { getUser } from "@/modules/user/utils";
 import { TrendingDown, TrendingUp, Wallet } from "lucide-react";
 
-type OverviewItemProps = {
+type OverviewData = {
   title: string;
   value: number;
   icon: React.ReactNode;
   variant?: "default" | "destructive" | "success";
 };
-
-const overviewItems: OverviewItemProps[] = [
-  {
-    title: "Income",
-    value: 1000,
-    icon: <TrendingUp size={30} />,
-    variant: "success",
-  },
-  {
-    title: "Expense",
-    value: 1000,
-    icon: <TrendingDown size={30} />,
-    variant: "destructive",
-  },
-  {
-    title: "Balance",
-    value: 1000,
-    icon: <Wallet size={30} />,
-  },
-];
 
 const variants = {
   default: "bg-blue-500/20",
@@ -34,12 +15,38 @@ const variants = {
   success: "bg-green-500/20",
 };
 
-export function OverviewSection() {
+export async function OverviewSection() {
+  const user = await getUser();
+
+  if (!user) {
+    return null;
+  }
+
+  const overviewData: OverviewData[] = [
+    {
+      title: "Income",
+      value: user.incomesCount,
+      icon: <TrendingUp size={30} />,
+      variant: "success",
+    },
+    {
+      title: "Expense",
+      value: user.expensesCount,
+      icon: <TrendingDown size={30} />,
+      variant: "destructive",
+    },
+    {
+      title: "Balance",
+      value: user.balance,
+      icon: <Wallet size={30} />,
+    },
+  ];
+
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-2xl font-bold mb-4">Overview</h2>
       <div className="flex gap-4 flex-col sm:flex-row">
-        {overviewItems.map((item) => (
+        {overviewData.map((item) => (
           <OverviewItem key={item.title} {...item} />
         ))}
       </div>
@@ -52,7 +59,7 @@ function OverviewItem({
   value,
   icon,
   variant = "default",
-}: OverviewItemProps) {
+}: OverviewData) {
   return (
     <div className="flex items-center rounded-xl border p-4 gap-2 grow">
       <span className={cn("p-3 rounded-lg", variants[variant])}>{icon}</span>

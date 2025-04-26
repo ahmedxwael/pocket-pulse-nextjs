@@ -1,24 +1,24 @@
-import { auth } from "@/shared/config/auth";
+import { getUser } from "@/modules/user/utils";
 import { URLS } from "@/shared/urls";
 import { redirect } from "next/navigation";
 
 export async function requireAuth() {
-  const session = await auth();
+  const user = await getUser();
 
   return {
     guarded: (redirectUrl = URLS.signIn) => {
-      if (!session) {
+      if (!user) {
         throw redirect(redirectUrl);
       }
-      return session;
+      return user;
     },
     reverseGuarded: (redirectUrl = URLS.home) => {
-      if (session) {
+      if (user) {
         throw redirect(redirectUrl);
       }
       return null;
     },
-    session,
+    user,
   };
 }
 

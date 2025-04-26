@@ -1,13 +1,14 @@
 "use client";
 
+import { loginAction } from "@/actions/auth";
 import { EmailInput, SubmitButton } from "@/design-system/components/Form";
 import { Button } from "@/design-system/components/ui/button";
 import { GithubIcon, GoogleIcon } from "@/design-system/icons";
 import { appName } from "@/shared/flags";
 import { URLS } from "@/shared/urls";
-
-import { signIn } from "next-auth/react";
+import { Loader } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 type InputFields = {
@@ -24,6 +25,15 @@ export function SignUpForm() {
     mode: "onChange",
     reValidateMode: "onChange",
   });
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleLogin = async (provider: "google" | "github") => {
+    setIsLoading(true);
+    await loginAction(provider);
+    setIsLoading(false);
+  };
+
   return (
     <div className="flex flex-col gap-4 max-w-full w-md">
       <form>
@@ -60,20 +70,26 @@ export function SignUpForm() {
             <Button
               variant="outline"
               className="w-full flex items-center gap-2"
-              disabled>
+              onClick={() => handleLogin("github")}
+              disabled={isLoading}>
               <GithubIcon />
-              Continue with Github
+              {isLoading ? (
+                <Loader className="animate-spin" />
+              ) : (
+                "Continue with Github"
+              )}
             </Button>
             <Button
               variant="outline"
               className="w-full flex items-center gap-2"
-              onClick={async () =>
-                await signIn("google", {
-                  callbackUrl: URLS.home,
-                })
-              }>
+              onClick={() => handleLogin("google")}
+              disabled={isLoading}>
               <GoogleIcon />
-              Continue with Google
+              {isLoading ? (
+                <Loader className="animate-spin" />
+              ) : (
+                "Continue with Google"
+              )}
             </Button>
           </div>
         </div>

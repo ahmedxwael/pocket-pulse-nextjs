@@ -11,7 +11,5 @@ export const metadata: Metadata = {
 export default async function SettingsPage() {
   const dbUser = await guardedRoute();
 
-  console.log(dbUser);
-
   return <SettingsPageContent />;
 }

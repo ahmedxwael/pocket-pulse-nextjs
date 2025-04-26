@@ -1,4 +1,7 @@
-import prisma from "@/prisma/index";
+import {
+  createUserService,
+  getUserService,
+} from "@/modules/user/services/user.service";
 import NextAuth from "next-auth";
 import Github from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
@@ -6,10 +9,12 @@ import Google from "next-auth/providers/google";
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [Google, Github],
   callbacks: {
-    async session({ session }: any) {
-      const user = await prisma.user.findUnique({
-        where: { email: session?.user?.email },
-      });
+    async session({ session }) {
+      if (!session.user || !session.user.email) {
+        return session;
+      }
+
+      const { data: user } = await getUserService(session.user.email);
 
       if (user) {
         session.user = {
@@ -19,7 +24,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           image: user.image,
           role: user.role,
           balance: user.balance,
-          isVerified: user.emailVerified,
+          incomesCount: user.incomesCount,
+          expensesCount: user.expensesCount,
+          isVerified: user.isVerified,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
           emailVerified: user.emailVerified,
@@ -31,19 +38,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async signIn({ user, account }) {
       try {
-        const storedUser = await prisma.user.findUnique({
-          where: { email: user.email! },
-        });
+        const { data: storedUser } = await getUserService(
+          user?.email as string
+        );
 
         if (!storedUser && user) {
-          await prisma.user.create({
-            data: {
-              email: user.email!,
-              name: user.name!,
-              image: user.image,
-              provider: account?.provider,
-            },
-          });
+          await createUserService({ user, account });
         }
 
         return true;

@@ -1,3 +1,4 @@
+import { LoadingOverlay } from "@/design-system/components";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { ReactNode } from "react";
 import { Header } from "../Header";
@@ -14,6 +15,7 @@ export function BaseLayout({ children }: BaseLayoutProps) {
       enableSystem
       disableTransitionOnChange>
       <Header />
+      <LoadingOverlay />
       {children}
     </ThemeProvider>
   );

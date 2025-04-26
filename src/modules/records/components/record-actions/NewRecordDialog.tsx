@@ -43,7 +43,7 @@ export function NewRecordDialog() {
   } = useForm<InputFields>();
 
   const onSubmit: SubmitHandler<InputFields> = (data) => {
-    console.log(data);
+    // console.log(data);
   };
 
   return (

@@ -22,10 +22,13 @@ model User {
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
   balance       Float      @default(0)
+  incomesCount  Float      @default(0)
+  expensesCount Float      @default(0)
   records       Record[]
   categories    Category[]
   provider      String?
-  emailVerified Boolean    @default(false)
+  emailVerified DateTime
+  isVerified    Boolean    @default(false)
   image         String?
   sessions      Session[]
   accounts      Account[]
@@ -49,6 +52,7 @@ model Record {
   @@index([userId])
   @@index([categoryId])
   @@index([type])
+  @@map("record")
 }
 
 model Category {
@@ -67,6 +71,7 @@ model Category {
   @@index([createdById])
   @@index([parentId])
   @@index([type])
+  @@map("category")
 }
 
 enum Role {
@@ -110,13 +115,4 @@ model Account {
 
   @@unique([provider, providerAccountId])
   @@map("account")
-}
-
-model VerificationToken {
-  identifier String   @id @map("_id")
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-  @@map("verification_token")
 }
