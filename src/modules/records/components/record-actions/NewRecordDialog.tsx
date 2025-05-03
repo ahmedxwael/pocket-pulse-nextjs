@@ -2,6 +2,7 @@
 
 import {
   IntegerInput,
+  SelectInput,
   SubmitButton,
   TextInput,
 } from "@/design-system/components/Form";
@@ -14,17 +15,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/design-system/components/ui/dialog";
-import { Label } from "@/design-system/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/design-system/components/ui/select";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { mainCategories } from "../../data";
-import { NewCategoryDialog } from "./NewCategoryDialog";
+import { SelectCategory } from "./SelectCategory";
 
 type InputFields = {
   description: string;
@@ -40,6 +32,7 @@ export function NewRecordDialog() {
     formState: { errors },
     register,
     reset,
+    setValue,
   } = useForm<InputFields>();
 
   const onSubmit: SubmitHandler<InputFields> = (data) => {
@@ -80,6 +73,7 @@ export function NewRecordDialog() {
             label="Amount"
             placeholder="100"
             required
+            min={1}
             register={register("amount", {
               required: "Amount is required",
               min: {
@@ -89,7 +83,16 @@ export function NewRecordDialog() {
             })}
             error={errors.amount?.message}
           />
-          
+          <SelectInput
+            id="type"
+            label="Type"
+            defaultValue="INCOME"
+            options={["INCOME", "EXPENSE", "SAVING", "TRANSFER", "ALLOCATION"]}
+            onValueChange={(value) => setValue("type", value)}
+            required
+          />
+          <SelectCategory />
+
           <SubmitButton className="grow sm:grow-0 sm:min-w-[120px]" />
         </form>
       </DialogContent>

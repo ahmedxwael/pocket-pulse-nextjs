@@ -1,7 +1,8 @@
-import { getUser } from "@/modules/user/utils";
+import { Params } from "@/design-system/types";
+import { getUser } from "@/modules/user/actions";
 import prisma from "@/prisma/index";
 
-export async function getCategoriesService() {
+export async function getCategoriesService(params: Params = {}) {
   const user = await getUser();
 
   if (!user) {
@@ -13,7 +14,9 @@ export async function getCategoriesService() {
   }
 
   const categories = await prisma.category.findMany({
+    ...params,
     where: {
+      ...params.where,
       createdById: user.id,
     },
   });
@@ -21,14 +24,14 @@ export async function getCategoriesService() {
   if (!categories) {
     return {
       data: null,
-      message: ".",
-      error: ".",
+      message: "No categories found",
+      error: null,
     };
   }
 
   return {
     data: categories,
-    message: "User found successfully",
+    message: "Categories found successfully",
     error: null,
   };
 }

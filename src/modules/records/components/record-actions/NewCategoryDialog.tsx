@@ -1,6 +1,10 @@
 "use client";
 
-import { SubmitButton, TextInput } from "@/design-system/components/Form";
+import {
+  SelectInput,
+  SubmitButton,
+  TextInput,
+} from "@/design-system/components/Form";
 import { SwitchInput } from "@/design-system/components/Form/SwitchInput";
 import { Button } from "@/design-system/components/ui/button";
 import {
@@ -10,18 +14,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/design-system/components/ui/dialog";
-import { Label } from "@/design-system/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/design-system/components/ui/select";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { mainCategories } from "../../data";
+import { useCategories } from "../../hooks";
 
 type InputFields = {
   name: string;
@@ -30,6 +26,7 @@ type InputFields = {
 };
 
 export function NewCategoryDialog() {
+  const { categories, loading, setCategories } = useCategories();
   const [subCategory, setSubCategory] = useState(false);
 
   const {
@@ -43,6 +40,8 @@ export function NewCategoryDialog() {
     // console.log(data);
   };
 
+  console.log("categories: ", categories);
+
   return (
     <Dialog
       onOpenChange={() => {
@@ -54,7 +53,7 @@ export function NewCategoryDialog() {
           type="button"
           variant="outline"
           size="icon"
-          className="rounded-full">
+          className="rounded-full capitalize">
           <Plus />
         </Button>
       </DialogTrigger>
@@ -86,23 +85,13 @@ export function NewCategoryDialog() {
             })}
           />
           {subCategory && (
-            <Select defaultValue={mainCategories[0].value}>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="category">Category</Label>
-                <SelectTrigger
-                  id="category"
-                  className="w-full sm:w-1/2 max-w-full">
-                  <SelectValue placeholder="Select Category" />
-                </SelectTrigger>
-              </div>
-              <SelectContent>
-                {mainCategories.map((category) => (
-                  <SelectItem key={category.value} value={category.value}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <SelectInput
+              id="category"
+              label="Category"
+              defaultValue={categories[0]?.id}
+              placeholder="Select Category"
+              options={categories.map((category) => category.name)}
+            />
           )}
           <SubmitButton className="grow sm:grow-0 sm:min-w-[120px]" />
         </form>

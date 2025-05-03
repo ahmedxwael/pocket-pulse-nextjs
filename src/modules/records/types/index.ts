@@ -7,6 +7,11 @@ export type Record = {
   targetAmount?: number;
   category: Category;
   type: Type;
+  createdAt: Date;
+  updatedAt: Date;
+  user?: User;
+  userId: string;
+  categoryId: string;
 };
 
 export type Category = {
@@ -16,7 +21,7 @@ export type Category = {
   updatedAt: Date;
   createdBy?: User;
   createdById: string;
-  expenses?: Record[];
+  records?: Record[];
   subCategories?: Category[];
   parentId: string;
   parent?: Category;

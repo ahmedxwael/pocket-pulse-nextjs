@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { ReactNode } from "react";
 import {
   Select,
   SelectContent,
@@ -21,6 +22,7 @@ type SelectInputProps<T extends string> = {
   setError?: (error: string) => void;
   required?: boolean;
   options: T[];
+  children?: ReactNode;
 };
 
 export function SelectInput<T extends string>({
@@ -30,6 +32,8 @@ export function SelectInput<T extends string>({
   error,
   required,
   options,
+  children,
+  placeholder,
   ...props
 }: SelectInputProps<T>) {
   return (
@@ -39,19 +43,28 @@ export function SelectInput<T extends string>({
           {label} {required && <span className="text-destructive">*</span>}
         </label>
       )}
-      <Select defaultValue={defaultValue} {...props}>
-        <SelectTrigger className="w-full">
-          <SelectValue
-            placeholder="Select an option"
-            defaultValue={defaultValue}
-          />
-        </SelectTrigger>
+      <Select {...props} defaultValue={defaultValue} required={required}>
+        <div className="flex items-center gap-2">
+          <SelectTrigger className="w-full">
+            <SelectValue
+              placeholder={placeholder || "Select an option"}
+              defaultValue={defaultValue}
+            />
+          </SelectTrigger>
+          {children}
+        </div>
         <SelectContent>
-          {options.map((option) => (
-            <SelectItem key={option} value={option}>
-              {option}
+          {options.length > 0 ? (
+            options.map((option) => (
+              <SelectItem key={option} value={option}>
+                {option}
+              </SelectItem>
+            ))
+          ) : (
+            <SelectItem disabled value="no-options">
+              No options
             </SelectItem>
-          ))}
+          )}
         </SelectContent>
       </Select>
     </div>

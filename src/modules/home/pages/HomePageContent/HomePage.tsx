@@ -1,5 +1,6 @@
 import { NewRecordDialog } from "@/modules/records/components";
 import { HomeHistorySection, OverviewSection } from "../../components";
+import { RecordsProgressSection } from "../../components/RecordsProgressSection";
 
 export function HomePageContent() {
   return (
@@ -12,6 +13,8 @@ export function HomePageContent() {
       </div>
       <div className="container flex flex-col gap-10">
         <OverviewSection />
+        <RecordsProgressSection />
+        {/* <UpcomingTransactionsSection/> */}
         <HomeHistorySection />
       </div>
     </section>

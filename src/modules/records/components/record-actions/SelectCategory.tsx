@@ -1,26 +1,22 @@
-import { Select } from "@/design-system/components/ui/select";
+"use client";
+
+import { SelectInput } from "@/design-system/components";
+import { useCategories } from "../../hooks";
+import { NewCategoryDialog } from "./NewCategoryDialog";
 
 export function SelectCategory() {
   const { categories } = useCategories();
 
-	return <Select defaultValue={mainCategories[0].value}>
-	<div className="flex flex-col gap-2">
-		<Label htmlFor="category">Category</Label>
-		<div className="flex gap-2">
-			<SelectTrigger
-				id="category"
-				className="w-full sm:w-1/2 max-w-full">
-				<SelectValue placeholder="Select Category" />
-			</SelectTrigger>
-			<NewCategoryDialog />
-		</div>
-	</div>
-	<SelectContent>
-		{mainCategories.map((category) => (
-			<SelectItem key={category.value} value={category.value}>
-				{category.name}
-			</SelectItem>
-		))}
-	</SelectContent>
-</Select>
+  return (
+    <div className="flex items-center gap-2">
+      <SelectInput
+        id="category"
+        label="Category"
+        defaultValue={categories[0]?.id}
+        placeholder="Select Category"
+        options={categories.map((category) => category.name)}>
+        <NewCategoryDialog />
+      </SelectInput>
+    </div>
+  );
 }
