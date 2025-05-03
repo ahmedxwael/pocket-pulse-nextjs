@@ -10,9 +10,9 @@ type OverviewData = {
 };
 
 const variants = {
-  default: "bg-blue-500/20",
-  destructive: "bg-red-500/20",
-  success: "bg-green-500/20",
+  default: "bg-primary/20 text-primary",
+  destructive: "bg-destructive/20 text-destructive",
+  success: "bg-success/20 text-success",
 };
 
 export async function OverviewSection() {
@@ -65,7 +65,7 @@ function OverviewItem({
       <span className={cn("p-3 rounded-lg", variants[variant])}>{icon}</span>
       <div className="flex flex-col gap-1">
         <h3 className="text-muted-foreground text-sm">{title}</h3>
-        <p className="text-xl font-bold">${value.toFixed(1)}</p>
+        <p className="text-xl font-bold">${value?.toFixed(1)}</p>
       </div>
     </div>
   );

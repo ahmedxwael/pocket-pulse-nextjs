@@ -20,11 +20,11 @@ const chartData = getRecordsChartData(recordsData);
 const chartConfig = {
   income: {
     label: "Income",
-    color: "#22C55E",
+    color: "var(--primary)",
   },
   expense: {
     label: "Expense",
-    color: "#DC2626",
+    color: "var(--secondary)",
   },
 } satisfies ChartConfig;
 
@@ -46,7 +46,7 @@ export function HistoryChart() {
   const [activeTab, setActiveTab] = useState<string | undefined>(tabs[0].value);
 
   return (
-    <div className="p-4 flex flex-col gap-6 rounded-xl border w-full">
+    <div className="p-4 flex flex-col gap-6 rounded-xl border w-full bg-background/80">
       <Tabs
         onTabChange={(tab) => setActiveTab(tab.value)}
         tabs={tabs}
@@ -56,13 +56,18 @@ export function HistoryChart() {
         config={chartConfig}
         className="sm:h-[600px] h-[300px] w-full">
         <BarChart accessibilityLayer data={chartData}>
-          <CartesianGrid vertical={false} strokeDasharray="5 5" />
+          <CartesianGrid
+            vertical={false}
+            strokeDasharray="5 5"
+            stroke="var(--border)"
+          />
           <YAxis
             tickLine={false}
             tickMargin={10}
             axisLine={false}
             tickFormatter={(value) => `$${value}`}
             domain={[0, maxY * 1.2]}
+            stroke="var(--muted-foreground)"
           />
           <XAxis
             dataKey={activeTab === "yearly" ? "month" : "day"}
@@ -70,11 +75,12 @@ export function HistoryChart() {
             tickMargin={10}
             axisLine={false}
             tickFormatter={(value) => value}
+            stroke="var(--muted-foreground)"
           />
           <ChartTooltip content={<ChartTooltipContent />} />
           <ChartLegend content={<ChartLegendContent />} />
-          <Bar dataKey="income" fill={chartConfig.income.color} radius={5} />
-          <Bar dataKey="expense" fill={chartConfig.expense.color} radius={5} />
+          <Bar dataKey="income" fill="var(--primary)" radius={5} />
+          <Bar dataKey="expense" fill="var(--secondary)" radius={5} />
         </BarChart>
       </ChartContainer>
     </div>

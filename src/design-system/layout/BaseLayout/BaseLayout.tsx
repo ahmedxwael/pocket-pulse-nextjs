@@ -1,5 +1,5 @@
 import { LoadingOverlay } from "@/design-system/components";
-import { ThemeProvider } from "@/providers/ThemeProvider";
+import { Toaster } from "@/design-system/components/ui/sonner";
 import { ReactNode } from "react";
 import { Header } from "../Header";
 
@@ -9,14 +9,11 @@ type BaseLayoutProps = {
 
 export function BaseLayout({ children }: BaseLayoutProps) {
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange>
+    <main className="relative">
       <Header />
       <LoadingOverlay />
+      <Toaster position="top-right" closeButton />
       {children}
-    </ThemeProvider>
+    </main>
   );
 }

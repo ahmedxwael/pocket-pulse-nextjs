@@ -1,12 +1,13 @@
-import { auth } from "@/shared/config/auth";
+import { cookies } from "@/shared/config/cookies";
+import { USER_SESSION_KEY } from "@/shared/utils";
 import { User } from "../types";
 
 export async function getUser(): Promise<User | null> {
-  const session = await auth();
+  const user = await cookies().get(USER_SESSION_KEY);
 
-  if (!session || !session.user) {
+  if (!user || !user) {
     return null;
   }
 
-  return session.user as User;
+  return user as User;
 }

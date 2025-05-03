@@ -46,13 +46,18 @@ export async function createUserService({
     };
   }
 
-  await prisma.user.create({
+  const newUser = await prisma.user.create({
     data: {
       email: user.email!,
       name: user.name!,
       image: user.image,
       provider: account?.provider || null,
-      emailVerified: new Date(),
     },
   });
+
+  return {
+    data: newUser,
+    message: "User created successfully!",
+    error: null,
+  };
 }

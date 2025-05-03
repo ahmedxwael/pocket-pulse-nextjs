@@ -22,12 +22,14 @@ model User {
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
   balance       Float      @default(0)
+  currency      Currency   @default(USD)
+  newUser       Boolean    @default(true)
   incomesCount  Float      @default(0)
   expensesCount Float      @default(0)
   records       Record[]
   categories    Category[]
   provider      String?
-  emailVerified DateTime
+  emailVerified DateTime?
   isVerified    Boolean    @default(false)
   image         String?
   sessions      Session[]
@@ -62,7 +64,7 @@ model Category {
   updatedAt     DateTime   @updatedAt
   createdBy     User       @relation(fields: [createdById], references: [id])
   createdById   String     @db.ObjectId
-  expenses      Record[]
+  records       Record[]
   subCategories Category[] @relation("ParentCategory")
   parentId      String?    @db.ObjectId
   parent        Category?  @relation("ParentCategory", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -77,6 +79,11 @@ model Category {
 enum Role {
   USER
   ADMIN
+}
+
+enum Currency {
+  USD
+  POUND
 }
 
 enum Type {

@@ -12,14 +12,14 @@ export type Record = {
 export type Category = {
   id: string;
   name: string;
-  createdAt: string;
-  updatedAt: string;
-  createdBy: User;
+  createdAt: Date;
+  updatedAt: Date;
+  createdBy?: User;
   createdById: string;
-  expenses: Record[];
-  subCategories: Category[];
+  expenses?: Record[];
+  subCategories?: Category[];
   parentId: string;
-  parent: Category;
+  parent?: Category;
   type: Type;
 };
 

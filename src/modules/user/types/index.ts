@@ -9,6 +9,8 @@ export type User = {
   createdAt: Date;
   updatedAt: Date;
   balance: number;
+  currency: Currency;
+  newUser: boolean;
   incomesCount: number;
   expensesCount: number;
   records?: Record[];
@@ -20,6 +22,8 @@ export type User = {
 };
 
 export type Role = "USER" | "ADMIN";
+
+export type Currency = "USD" | "POUND";
 
 export type UserSession = {
   user: User;

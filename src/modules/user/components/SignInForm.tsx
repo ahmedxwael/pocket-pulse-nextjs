@@ -1,6 +1,7 @@
 "use client";
 
 import { loginAction } from "@/actions/auth";
+import { toastError } from "@/design-system/components";
 import { EmailInput, SubmitButton } from "@/design-system/components/Form";
 import { Button } from "@/design-system/components/ui/button";
 import { GithubIcon, GoogleIcon } from "@/design-system/icons";
@@ -28,9 +29,16 @@ export function SignInForm() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (provider: "google" | "github") => {
-    setIsLoading(true);
-    await loginAction(provider);
-    setIsLoading(false);
+    try {
+      setIsLoading(true);
+      await loginAction(provider);
+    } catch (error) {
+      toastError("Error signing in", {
+        description: `Error signing in: ${error}`,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

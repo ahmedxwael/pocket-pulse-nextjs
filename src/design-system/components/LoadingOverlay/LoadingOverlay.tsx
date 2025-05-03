@@ -24,7 +24,7 @@ export function LoadingOverlay() {
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-accent/20 flex items-center justify-center p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[100] bg-accent/20 flex items-center justify-center p-4 backdrop-blur-sm">
       <Loader size={32} className="animate-spin" />
     </div>
   );

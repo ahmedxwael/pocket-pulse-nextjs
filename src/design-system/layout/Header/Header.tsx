@@ -6,7 +6,7 @@ export async function Header() {
   const { user } = await requireAuth();
 
   return (
-    <header className="sticky z-50 top-0 w-full border-b bg-background/10 backdrop-blur-sm">
+    <header className="sticky z-50 top-0 w-full border-b bg-background/80 backdrop-blur-sm">
       <nav className="container flex items-center justify-between gap-10 py-4">
         <AppLogo />
         <NavLinks className="mr-auto hidden md:flex" />

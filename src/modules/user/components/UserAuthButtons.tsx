@@ -1,5 +1,6 @@
 "use client";
 
+import { toastSuccess } from "@/design-system/components";
 import { Button, buttonVariants } from "@/design-system/components/ui/button";
 import {
   DropdownMenu,
@@ -11,10 +12,10 @@ import { loadingOverlayStore } from "@/design-system/stores";
 import { cn } from "@/lib/utils";
 import { URLS } from "@/shared/urls";
 import { LogOutIcon, UserIcon } from "lucide-react";
-import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { signout } from "../actions";
 import { User } from "../types";
 
 type UserAuthButtonsProps = {
@@ -26,9 +27,13 @@ export function UserAuthButtons({ user }: UserAuthButtonsProps) {
   const { loading, setLoading } = loadingOverlayStore();
 
   const handleSignOut = async () => {
-    setLoading(true);
-    await signOut({ callbackUrl: URLS.signIn });
-    setLoading(false);
+    try {
+      setLoading(true);
+      await signout();
+    } finally {
+      toastSuccess("Signed out successfully");
+      setLoading(false);
+    }
   };
 
   return user ? (
