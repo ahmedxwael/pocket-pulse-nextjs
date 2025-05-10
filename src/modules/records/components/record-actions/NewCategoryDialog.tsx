@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  SelectInput,
-  SubmitButton,
-  TextInput,
-} from "@/design-system/components/Form";
-import { SwitchInput } from "@/design-system/components/Form/SwitchInput";
+import { SubmitButton, TextInput } from "@/design-system/components/Form";
 import { Button } from "@/design-system/components/ui/button";
 import {
   Dialog,
@@ -15,7 +10,6 @@ import {
   DialogTrigger,
 } from "@/design-system/components/ui/dialog";
 import { Plus } from "lucide-react";
-import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useCategories } from "../../hooks";
 
@@ -26,8 +20,7 @@ type InputFields = {
 };
 
 export function NewCategoryDialog() {
-  const { categories, loading, setCategories } = useCategories();
-  const [subCategory, setSubCategory] = useState(false);
+  const { categories } = useCategories();
 
   const {
     handleSubmit,
@@ -37,7 +30,9 @@ export function NewCategoryDialog() {
   } = useForm<InputFields>();
 
   const onSubmit: SubmitHandler<InputFields> = (data) => {
-    // console.log(data);
+    console.log(data);
+
+    reset();
   };
 
   console.log("categories: ", categories);
@@ -45,7 +40,6 @@ export function NewCategoryDialog() {
   return (
     <Dialog
       onOpenChange={() => {
-        setSubCategory(false);
         reset();
       }}>
       <DialogTrigger asChild>
@@ -74,25 +68,6 @@ export function NewCategoryDialog() {
             error={errors.name?.message}
           />
 
-          <SwitchInput
-            id="subCategory"
-            label="Subcategory"
-            name="subCategory"
-            defaultChecked={false}
-            onChange={(e) => setSubCategory(e.target.checked)}
-            register={register("subCategory", {
-              required: "Subcategory is required!",
-            })}
-          />
-          {subCategory && (
-            <SelectInput
-              id="category"
-              label="Category"
-              defaultValue={categories[0]?.id}
-              placeholder="Select Category"
-              options={categories.map((category) => category.name)}
-            />
-          )}
           <SubmitButton className="grow sm:grow-0 sm:min-w-[120px]" />
         </form>
       </DialogContent>

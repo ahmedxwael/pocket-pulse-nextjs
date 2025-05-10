@@ -1,3 +1,4 @@
+export * from "./async-handler";
 export * from "./consts";
 export * from "./json";
 export * from "./localStorage";

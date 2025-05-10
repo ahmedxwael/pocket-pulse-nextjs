@@ -1,7 +1,3 @@
-type FooterProps = {
-  // Define your component props here
-};
-
-export function Footer(props: FooterProps) {
+export function Footer() {
   return <div>{/* Your component JSX goes here */}</div>;
 }

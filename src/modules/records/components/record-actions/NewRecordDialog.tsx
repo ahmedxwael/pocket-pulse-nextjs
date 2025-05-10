@@ -1,5 +1,6 @@
 "use client";
 
+import { toastError, toastSuccess } from "@/design-system/components";
 import {
   IntegerInput,
   SelectInput,
@@ -15,7 +16,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/design-system/components/ui/dialog";
+import { loadingOverlayStore } from "@/design-system/stores";
+import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { createRecordAction } from "../../actions";
 import { SelectCategory } from "./SelectCategory";
 
 type InputFields = {
@@ -27,20 +31,37 @@ type InputFields = {
 };
 
 export function NewRecordDialog() {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const { setLoading } = loadingOverlayStore();
   const {
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     register,
     reset,
     setValue,
   } = useForm<InputFields>();
 
-  const onSubmit: SubmitHandler<InputFields> = (data) => {
-    // console.log(data);
+  const onSubmit: SubmitHandler<InputFields> = async (data) => {
+    console.log(data);
+    try {
+      setLoading(true);
+      await createRecordAction(data);
+      toastSuccess("Record created successfully");
+      setDialogOpen(false);
+    } catch (error: any) {
+      toastError(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <Dialog onOpenChange={() => reset()}>
+    <Dialog
+      open={dialogOpen}
+      onOpenChange={(open) => {
+        setDialogOpen(open);
+        if (!open) reset();
+      }}>
       <DialogTrigger asChild>
         <Button className="capitalize font-semibold" size="lg">
           New record
@@ -67,6 +88,7 @@ export function NewRecordDialog() {
               },
             })}
             error={errors.description?.message}
+            disabled={isSubmitting}
           />
           <IntegerInput
             id="amount"
@@ -82,6 +104,7 @@ export function NewRecordDialog() {
               },
             })}
             error={errors.amount?.message}
+            disabled={isSubmitting}
           />
           <SelectInput
             id="type"
@@ -90,10 +113,13 @@ export function NewRecordDialog() {
             options={["INCOME", "EXPENSE", "SAVING", "TRANSFER", "ALLOCATION"]}
             onValueChange={(value) => setValue("type", value)}
             required
+            disabled={isSubmitting}
           />
-          <SelectCategory />
-
-          <SubmitButton className="grow sm:grow-0 sm:min-w-[120px]" />
+          <SelectCategory disabled={isSubmitting} />
+          <SubmitButton
+            className="grow sm:grow-0 sm:min-w-[120px]"
+            disabled={isSubmitting}
+          />
         </form>
       </DialogContent>
     </Dialog>

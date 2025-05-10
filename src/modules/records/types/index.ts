@@ -1,4 +1,5 @@
 import { User } from "@/modules/user/types";
+import { Prisma } from "@prisma/client";
 
 export type Record = {
   id: string;
@@ -29,3 +30,37 @@ export type Category = {
 };
 
 export type Type = "INCOME" | "EXPENSE" | "SAVING" | "TRANSFER" | "ALLOCATION";
+
+export type RecordResponse = {
+  data: Record | null;
+  message: string;
+  error: any;
+};
+
+export type RecordListResponse = {
+  data: Record[];
+  message: string;
+  error: any;
+};
+
+export type RecordGeneralParams = {
+  where: Prisma.RecordWhereUniqueInput;
+  select?: Prisma.RecordSelect;
+  include?: Prisma.RecordInclude;
+  omit?: Prisma.RecordOmit;
+};
+
+export type RecordPostParams = {
+  data: any;
+  select?: Prisma.RecordSelect;
+  include?: Prisma.RecordInclude;
+  omit?: Prisma.RecordOmit;
+};
+
+export type RecordPutParams = {
+  where: Prisma.RecordWhereUniqueInput;
+  data: any;
+  select?: Prisma.RecordSelect;
+  include?: Prisma.RecordInclude;
+  omit?: Prisma.RecordOmit;
+};

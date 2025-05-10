@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { parse, stringify } from "../json";
 
 export class LocalStorage {

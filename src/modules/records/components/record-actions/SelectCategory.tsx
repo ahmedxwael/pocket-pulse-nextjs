@@ -4,7 +4,21 @@ import { SelectInput } from "@/design-system/components";
 import { useCategories } from "../../hooks";
 import { NewCategoryDialog } from "./NewCategoryDialog";
 
-export function SelectCategory() {
+type SelectCategoryProps = {
+  onChange?: (category: string) => void;
+  disabled?: boolean;
+  defaultValue?: string;
+  className?: string;
+  options?: string[];
+};
+
+export function SelectCategory({
+  onChange,
+  disabled = false,
+  className,
+  defaultValue,
+  options,
+}: SelectCategoryProps) {
   const { categories } = useCategories();
 
   return (
@@ -12,9 +26,12 @@ export function SelectCategory() {
       <SelectInput
         id="category"
         label="Category"
-        defaultValue={categories[0]?.id}
+        disabled={disabled}
+        className={className}
+        onValueChange={onChange}
+        defaultValue={defaultValue || categories[0]?.id}
         placeholder="Select Category"
-        options={categories.map((category) => category.name)}>
+        options={options || categories.map((category) => category.name)}>
         <NewCategoryDialog />
       </SelectInput>
     </div>

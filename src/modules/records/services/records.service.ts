@@ -1,174 +1,135 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Params } from "@/design-system/types";
 import { getCurrentUser } from "@/modules/user/actions";
 import prisma from "@/prisma/index";
-import { GenericObject } from "@/shared/types";
-import { Record } from "../types";
+import { asyncHandler } from "@/shared/utils";
+import {
+  Record,
+  RecordGeneralParams,
+  RecordPostParams,
+  RecordPutParams,
+} from "../types";
 
-export async function getRecordsService(params: Params = {}) {
+async function authorized() {
   const user = await getCurrentUser();
 
   if (!user) {
-    return {
-      data: null,
-      message: "Unauthorized",
-      error: "Unauthorized",
-    };
+    throw new Error("Unauthorized");
   }
 
-  const records = await prisma.record.findMany({
-    ...params,
-    where: {
-      ...params.where,
-      userId: user.id,
-    },
-  });
+  return {
+    data: user,
+    message: "Authorized",
+    error: null,
+  };
+}
 
-  if (!records) {
+export const getRecordsService = await asyncHandler(
+  async (params: RecordGeneralParams) => {
+    const { data: user } = await authorized();
+
+    const records = await prisma.record.findMany({
+      ...params,
+      where: {
+        ...params.where,
+        userId: user.id,
+      },
+    });
+
     return {
-      data: null,
-      message: "No records found",
+      data: records as Record[],
+      message: "Records found successfully",
       error: null,
     };
   }
+);
 
-  return {
-    data: (records || []) as Record[],
-    message: "Records found successfully",
-    error: null,
-  };
-}
+export const getRecordService = await asyncHandler(
+  async (id: string, params: RecordGeneralParams) => {
+    const { data: user } = await authorized();
 
-export async function getRecordService(id: string, params: Params = {}) {
-  const user = await getCurrentUser();
+    const record = await prisma.record.findUnique({
+      ...params,
+      where: {
+        ...(params?.where || {}),
+        id,
+        userId: user.id,
+      },
+    });
 
-  if (!user) {
+    if (!record) {
+      return {
+        data: null,
+        message: "Record not found",
+        error: null,
+      };
+    }
+
     return {
-      data: null,
-      message: "Unauthorized",
-      error: "Unauthorized",
-    };
-  }
-
-  const record = await prisma.record.findUnique({
-    where: {
-      id,
-      userId: user.id,
-      ...params.where,
-    },
-    ...params,
-  });
-
-  if (!record) {
-    return {
-      data: null,
-      message: "No record found",
+      data: record as Record,
+      message: "Record found successfully",
       error: null,
     };
   }
+);
 
-  return {
-    data: record as Record,
-    message: "Record found successfully",
-    error: null,
-  };
-}
+export const createRecordService = await asyncHandler(
+  async (data: any, params: RecordPostParams) => {
+    const { data: user } = await authorized();
 
-export async function createRecordService(
-  data: any,
-  params: GenericObject = {}
-) {
-  const record = await prisma.record.create({
-    data,
-    ...params,
-  });
+    const record = await prisma.record.create({
+      ...params,
+      data: {
+        ...data,
+        userId: user.id,
+      },
+    });
 
-  if (!record) {
     return {
-      data: null,
-      message: "No record created",
+      data: record as Record,
+      message: "Record created successfully",
       error: null,
     };
   }
+);
 
-  return {
-    data: record as Record,
-    message: "Record created successfully",
-    error: null,
-  };
-}
+export const updateRecordService = await asyncHandler(
+  async (id: string, data: any, params: RecordPutParams) => {
+    const { data: user } = await authorized();
 
-export async function updateRecordService(
-  id: string,
-  data: any,
-  params: Params = {}
-) {
-  const user = await getCurrentUser();
+    const record = await prisma.record.update({
+      ...params,
+      where: {
+        ...(params?.where || {}),
+        id,
+        userId: user.id,
+      },
+      data,
+    });
 
-  if (!user) {
     return {
-      data: null,
-      message: "Unauthorized",
-      error: "Unauthorized",
+      data: record as Record,
+      message: "Record updated successfully",
+      error: null,
     };
   }
+);
 
-  const record = await prisma.record.update({
-    where: {
-      id,
-      userId: user.id,
-      ...params.where,
-    },
-    data,
-    ...params,
-  });
+export const deleteRecordService = await asyncHandler(
+  async (id: string, params: RecordGeneralParams) => {
+    const { data: user } = await authorized();
 
-  if (!record) {
+    const record = await prisma.record.delete({
+      ...params,
+      where: {
+        ...(params?.where || {}),
+        id,
+        userId: user.id,
+      },
+    });
+
     return {
-      data: null,
-      message: "Couldn't find the record.",
-      error: "Couldn't update the record.",
+      data: record as Record,
+      message: "Record deleted successfully",
+      error: null,
     };
   }
-
-  return {
-    data: record as Record,
-    message: "Record updated successfully",
-    error: null,
-  };
-}
-
-export async function deleteRecordService(id: string, params: Params = {}) {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    return {
-      data: null,
-      message: "Unauthorized",
-      error: "Unauthorized",
-    };
-  }
-
-  const record = await prisma.record.delete({
-    where: {
-      id,
-      userId: user.id,
-      ...params.where,
-    },
-    ...params,
-  });
-
-  if (!record) {
-    return {
-      data: null,
-      message: "Couldn't find the record.",
-      error: "Couldn't delete the record.",
-    };
-  }
-
-  return {
-    data: record as Record,
-    message: "Record deleted successfully",
-    error: null,
-  };
-}
+);

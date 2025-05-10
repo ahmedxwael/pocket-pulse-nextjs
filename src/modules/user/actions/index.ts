@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
 import { cookies } from "@/shared/config/cookies";
@@ -8,8 +7,6 @@ import { User } from "../types";
 
 export async function getCurrentUser(): Promise<User | null> {
   const user = await cookies().get(USER_SESSION_KEY);
-
-  console.log("current user: ", user);
 
   if (!user) {
     return null;

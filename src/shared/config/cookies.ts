@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { cookies as nextCookies } from "next/headers";
 import { removeCookieAction, setCookieAction } from "../actions";
 

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import prisma from "@/prisma/index";
 import type { Account, User } from "next-auth";
 

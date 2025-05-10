@@ -1,14 +1,8 @@
 import { NoData } from "@/design-system/components";
-import { getRecordsService } from "@/modules/records/services";
+import { getRecordsAction } from "@/modules/records/actions";
 
 export async function RecordsProgressSection() {
-  const { data } = await getRecordsService({
-    include: {
-      category: true,
-    },
-  });
-
-  // console.log("data: ", data);
+  const { data } = await getRecordsAction();
 
   return (
     <div className="flex flex-col gap-6">
