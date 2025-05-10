@@ -1,4 +1,4 @@
-import { reverseGuardedRoute } from "@/lib/auth";
+import { reverseGuardedRoute } from "@/lib";
 import { SignInPageContent } from "@/modules/user/pages/SignInPageContent";
 import { appName } from "@/shared/flags";
 

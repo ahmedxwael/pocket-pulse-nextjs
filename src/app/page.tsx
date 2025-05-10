@@ -1,4 +1,4 @@
-import { guardedRoute } from "@/lib/auth";
+import { guardedRoute } from "@/lib";
 import { HomePageContent } from "@/modules/home/pages/HomePageContent";
 import { appName } from "@/shared/flags";
 import { Metadata } from "next";
