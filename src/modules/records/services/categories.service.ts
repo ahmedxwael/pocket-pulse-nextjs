@@ -1,9 +1,18 @@
 import { Params } from "@/design-system/types";
-import { getUser } from "@/modules/user/actions";
+import { getCurrentUser } from "@/modules/user/actions";
 import prisma from "@/prisma/index";
+import { Category } from "../types";
 
-export async function getCategoriesService(params: Params = {}) {
-  const user = await getUser();
+type CategoriesResponse = {
+  data: Category[] | null;
+  message: string;
+  error: string | null;
+};
+
+export async function getCategoriesService(
+  params: Params = {}
+): Promise<CategoriesResponse> {
+  const user = await getCurrentUser();
 
   if (!user) {
     return {
@@ -30,7 +39,7 @@ export async function getCategoriesService(params: Params = {}) {
   }
 
   return {
-    data: categories,
+    data: categories as Category[],
     message: "Categories found successfully",
     error: null,
   };

@@ -10,12 +10,12 @@ import {
 } from "@/design-system/components/ui/dropdown-menu";
 import { loadingOverlayStore } from "@/design-system/stores";
 import { cn } from "@/lib/utils";
+import { signOutAction as signOut } from "@/modules/auth/actions";
 import { URLS } from "@/shared/urls";
 import { LogOutIcon, UserIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { signout } from "../actions";
+import { redirect, useRouter } from "next/navigation";
 import { User } from "../types";
 
 type UserAuthButtonsProps = {
@@ -29,10 +29,11 @@ export function UserAuthButtons({ user }: UserAuthButtonsProps) {
   const handleSignOut = async () => {
     try {
       setLoading(true);
-      await signout();
+      await signOut();
     } finally {
       toastSuccess("Signed out successfully");
       setLoading(false);
+      redirect(URLS.signIn);
     }
   };
 

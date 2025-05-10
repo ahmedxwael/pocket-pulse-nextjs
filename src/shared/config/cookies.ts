@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { cookies as nextCookies } from "next/headers";
+import { removeCookieAction, setCookieAction } from "../actions";
 
 type CookieOptions = {
   value: any; // Consider being more specific than 'any'
@@ -77,8 +78,6 @@ export class CookieManager {
       sameSite: "none",
     }
   ) {
-    const cookiesStore = await nextCookies();
-
     if (!this._cookies) {
       await this.parseCookies();
     }
@@ -95,7 +94,8 @@ export class CookieManager {
       ...cookieOptions,
       value: encodedValue,
     };
-    cookiesStore.set(name, encodedValue, cookieOptions);
+
+    await setCookieAction(name, encodedValue);
 
     return cookies[name];
   }
@@ -104,10 +104,8 @@ export class CookieManager {
    * Remove a cookie by name
    */
   public async remove(name: string) {
-    const cookiesStore = await nextCookies();
-
     delete this.cookies[name];
-    cookiesStore.delete(name);
+    await removeCookieAction(name);
   }
 
   protected transformCookieToResponse(name: string, options: CookieOptions) {

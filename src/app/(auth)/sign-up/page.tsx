@@ -1,4 +1,3 @@
-import { reverseGuardedRoute } from "@/lib/auth.server";
 import { SignUpPageContent } from "@/modules/user/pages/SignUpPageContent";
 import { appName } from "@/shared/flags";
 import { Metadata } from "next";
@@ -9,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function SignUpPage() {
-  await reverseGuardedRoute();
+  // await reverseGuardedRoute();
 
   return <SignUpPageContent />;
 }

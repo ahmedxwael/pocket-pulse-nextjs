@@ -2,14 +2,13 @@
 
 import { ThemeToggler } from "@/design-system/components";
 import { UserAuthButtons } from "@/modules/user/components";
-import { User } from "@/modules/user/types";
+import { UserContext } from "@/providers";
+import { useContext } from "react";
 import { NavLinksDrawer } from "./NavLinksDrawer";
 
-type UserAuthButtonsProps = {
-  user: User | null;
-};
+export function UserButtons() {
+  const user = useContext(UserContext);
 
-export function UserButtons({ user }: UserAuthButtonsProps) {
   return (
     <div className="flex items-center gap-2">
       <UserAuthButtons user={user} />

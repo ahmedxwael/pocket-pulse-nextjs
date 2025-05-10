@@ -1,7 +1,8 @@
 import { GlowingElements, LoadingOverlay } from "@/design-system/components";
-import { BaseLayout, NewUserLayout } from "@/design-system/layout";
+import { BaseLayout } from "@/design-system/layout";
 import { cn } from "@/lib/utils";
-import { getUser } from "@/modules/user/actions";
+import { getCurrentUser } from "@/modules/user/actions";
+import { UserProvider } from "@/providers";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { appName } from "@/shared/flags";
 import type { Metadata } from "next";
@@ -24,7 +25,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await getUser();
+  const user = await getCurrentUser();
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -36,11 +37,9 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange>
           <LoadingOverlay />
-          {user && user.newUser ? (
-            <NewUserLayout />
-          ) : (
+          <UserProvider user={user}>
             <BaseLayout>{children}</BaseLayout>
-          )}
+          </UserProvider>
         </ThemeProvider>
       </body>
     </html>

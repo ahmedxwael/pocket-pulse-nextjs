@@ -1,9 +1,9 @@
 "use client";
 
-import { loginAction } from "@/actions/auth";
 import { EmailInput, SubmitButton } from "@/design-system/components/Form";
 import { Button } from "@/design-system/components/ui/button";
 import { GithubIcon, GoogleIcon } from "@/design-system/icons";
+import { signInAction } from "@/modules/auth/actions";
 import { appName } from "@/shared/flags";
 import { URLS } from "@/shared/urls";
 import { Loader } from "lucide-react";
@@ -30,7 +30,8 @@ export function SignUpForm() {
 
   const handleLogin = async (provider: "google" | "github") => {
     setIsLoading(true);
-    await loginAction(provider);
+    // await loginAction(provider);
+    await signInAction({ provider });
     setIsLoading(false);
   };
 

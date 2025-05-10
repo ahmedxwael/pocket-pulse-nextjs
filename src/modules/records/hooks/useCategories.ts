@@ -10,10 +10,8 @@ export function useCategories() {
   useEffect(() => {
     setLoading(true);
     getCategoriesAction()
-      .then((data) => {
-        if (data) {
-          setCategories(data);
-        }
+      .then(({ data }) => {
+        setCategories(data || []);
       })
       .catch((err) => {
         setError(err.message);

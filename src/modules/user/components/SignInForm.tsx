@@ -1,10 +1,10 @@
 "use client";
 
-import { loginAction } from "@/actions/auth";
 import { toastError } from "@/design-system/components";
 import { EmailInput, SubmitButton } from "@/design-system/components/Form";
 import { Button } from "@/design-system/components/ui/button";
 import { GithubIcon, GoogleIcon } from "@/design-system/icons";
+import { signInAction } from "@/modules/auth/actions";
 import { appName } from "@/shared/flags";
 import { URLS } from "@/shared/urls";
 import { Loader } from "lucide-react";
@@ -31,7 +31,7 @@ export function SignInForm() {
   const handleLogin = async (provider: "google" | "github") => {
     try {
       setIsLoading(true);
-      await loginAction(provider);
+      await signInAction({ provider });
     } catch (error) {
       toastError("Error signing in", {
         description: `Error signing in: ${error}`,

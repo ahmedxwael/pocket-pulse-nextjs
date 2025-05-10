@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { getUser } from "@/modules/user/utils";
+import { getCurrentUser } from "@/modules/user/actions";
 import { OverviewData, overviewData } from "../data";
 
 const variants = {
@@ -9,7 +9,7 @@ const variants = {
 };
 
 export async function OverviewSection() {
-  const user = await getUser();
+  const user = await getCurrentUser();
 
   if (!user) {
     return null;

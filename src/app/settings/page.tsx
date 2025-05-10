@@ -1,4 +1,3 @@
-import { guardedRoute } from "@/lib/auth.server";
 import { SettingsPageContent } from "@/modules/settings/pages/settings-page";
 import { appName } from "@/shared/flags";
 import { Metadata } from "next";
@@ -9,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function SettingsPage() {
-  const dbUser = await guardedRoute();
+  // const dbUser = await guardedRoute();
 
   return <SettingsPageContent />;
 }

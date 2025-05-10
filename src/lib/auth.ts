@@ -1,9 +1,9 @@
-import { getUser } from "@/modules/user/actions";
+import { getCurrentUser } from "@/modules/user/actions";
 import { URLS } from "@/shared/urls";
 import { redirect } from "next/navigation";
 
 export async function requireAuth() {
-  const user = await getUser();
+  const user = await getCurrentUser();
 
   return {
     guarded: (redirectUrl = URLS.signIn) => {
@@ -24,14 +24,14 @@ export async function requireAuth() {
   };
 }
 
-export const guardedRoute = async (redirectUrl?: string) => {
+export async function guardedRoute(redirectUrl?: string) {
   const { guarded } = await requireAuth();
 
   return guarded(redirectUrl);
-};
+}
 
-export const reverseGuardedRoute = async (redirectUrl?: string) => {
+export async function reverseGuardedRoute(redirectUrl?: string) {
   const { reverseGuarded } = await requireAuth();
 
   return reverseGuarded(redirectUrl);
-};
+}

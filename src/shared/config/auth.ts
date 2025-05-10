@@ -1,7 +1,5 @@
-import {
-  createUserService,
-  getUserService,
-} from "@/modules/user/services/user.service";
+import { getUser } from "@/modules/user/actions";
+import { createUserService } from "@/modules/user/services";
 import { User } from "@/modules/user/types";
 import NextAuth from "next-auth";
 import Github from "next-auth/providers/github";
@@ -9,14 +7,12 @@ import Google from "next-auth/providers/google";
 import { only, USER_ALLOWED_FIELDS, USER_SESSION_KEY } from "../utils";
 import { cookies } from "./cookies";
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const { handlers, signIn } = NextAuth({
   providers: [Google, Github],
   callbacks: {
     async signIn({ user, account }) {
       try {
-        const { data: storedUser } = await getUserService(
-          user?.email as string
-        );
+        const { data: storedUser } = await getUser(user?.email as string);
         let data = storedUser;
 
         if (!storedUser && user) {

@@ -16,12 +16,13 @@ import {
   CardTitle,
 } from "@/design-system/components/ui/card";
 import { loadingOverlayStore } from "@/design-system/stores";
-import { getUser, signout, updateUserAction } from "@/modules/user/actions";
-import { User } from "@/modules/user/types";
+import { signOutAction as signOut } from "@/modules/auth/actions";
+import { updateUser } from "@/modules/user/actions";
+import { useUser } from "@/modules/user/hooks";
+import { URLS } from "@/shared/urls";
 import { ArrowLeftIcon } from "lucide-react";
 import { motion } from "motion/react";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { redirect, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 type InputFields = {
@@ -31,7 +32,7 @@ type InputFields = {
 
 export function NewUserLayout() {
   const { setLoading } = loadingOverlayStore();
-  const [user, setUser] = useState<User | null>(null);
+  const { user, loading } = useUser();
   const router = useRouter();
 
   const {
@@ -46,21 +47,12 @@ export function NewUserLayout() {
     },
   });
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const userData = await getUser();
-      setUser(userData);
-    };
-
-    fetchUser();
-  }, []);
-
   const onSubmit = async (data: InputFields) => {
     if (!user) return;
 
     try {
       setLoading(true);
-      await updateUserAction(user.id, {
+      await updateUser(user.id, {
         ...data,
         balance: Number(data.balance),
         newUser: false,
@@ -84,9 +76,10 @@ export function NewUserLayout() {
   const handleLogout = async () => {
     setLoading(true);
     try {
-      await signout();
+      await signOut();
     } finally {
       setLoading(false);
+      redirect(URLS.signIn);
     }
   };
 
@@ -137,7 +130,9 @@ export function NewUserLayout() {
                 error={errors.balance?.message}
               />
 
-              <SubmitButton className="w-full py-3 text-md font-semibold h-auto">
+              <SubmitButton
+                disabled={loading}
+                className="w-full py-3 text-md font-semibold h-auto">
                 Save and Continue
               </SubmitButton>
             </form>
