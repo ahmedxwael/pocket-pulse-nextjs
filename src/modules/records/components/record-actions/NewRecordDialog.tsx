@@ -17,6 +17,10 @@ import {
   DialogTrigger,
 } from "@/design-system/components/ui/dialog";
 import { loadingOverlayStore } from "@/design-system/stores";
+import { useUser } from "@/modules/user/hooks";
+import { validateFields } from "@/shared/utils";
+import { Type } from "@prisma/client";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { createRecordAction } from "../../actions";
@@ -26,11 +30,14 @@ type InputFields = {
   description: string;
   amount: number;
   targetAmount?: number;
-  category: string;
-  type: string;
+  categoryId: string;
+  type: Type;
 };
 
 export function NewRecordDialog() {
+  const { user } = useUser({ init: true });
+
+  const router = useRouter();
   const [dialogOpen, setDialogOpen] = useState(false);
   const { setLoading } = loadingOverlayStore();
   const {
@@ -42,12 +49,35 @@ export function NewRecordDialog() {
   } = useForm<InputFields>();
 
   const onSubmit: SubmitHandler<InputFields> = async (data) => {
-    console.log(data);
+    const { errors } = validateFields(data, ["description", "amount", "type"]);
+
+    if (errors.length > 0) {
+      return errors.map((error) => toastError(error.message));
+    }
+
+    if (
+      user?.balance !== undefined &&
+      user.balance < Number(data.amount) &&
+      data.type === "EXPENSE"
+    ) {
+      return toastError("Insufficient balance");
+    }
+
     try {
       setLoading(true);
-      await createRecordAction(data);
+      await createRecordAction({
+        data: {
+          ...data,
+          amount: Number(data.amount),
+        },
+        include: {
+          category: true,
+        },
+      });
       toastSuccess("Record created successfully");
       setDialogOpen(false);
+      reset();
+      router.refresh();
     } catch (error: any) {
       toastError(error.message);
     } finally {
@@ -110,12 +140,22 @@ export function NewRecordDialog() {
             id="type"
             label="Type"
             defaultValue="INCOME"
-            options={["INCOME", "EXPENSE", "SAVING", "TRANSFER", "ALLOCATION"]}
-            onValueChange={(value) => setValue("type", value)}
+            options={[
+              { label: "Income", value: "INCOME" },
+              { label: "Expense", value: "EXPENSE" },
+              { label: "Saving", value: "SAVING" },
+              { label: "Transfer", value: "TRANSFER" },
+              { label: "Allocation", value: "ALLOCATION" },
+            ]}
+            onValueChange={(value) => setValue("type", value as Type)}
+            onInit={(value) => setValue("type", value as Type)}
             required
             disabled={isSubmitting}
           />
-          <SelectCategory disabled={isSubmitting} />
+          <SelectCategory
+            onChange={(value) => setValue("categoryId", value)}
+            disabled={isSubmitting}
+          />
           <SubmitButton
             className="grow sm:grow-0 sm:min-w-[120px]"
             disabled={isSubmitting}

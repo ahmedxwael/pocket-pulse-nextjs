@@ -13,10 +13,11 @@ import {
   RecordPostParams,
   RecordPutParams,
   RecordResponse,
+  RecordsParams,
 } from "../types";
 
 export async function getRecordsAction(
-  params?: RecordGeneralParams
+  params?: RecordsParams
 ): Promise<RecordListResponse> {
   return await getRecordsService(params);
 }
@@ -29,10 +30,9 @@ export async function getRecordAction(
 }
 
 export async function createRecordAction(
-  data: any,
   params?: RecordPostParams
 ): Promise<RecordResponse> {
-  return await createRecordService(data, params);
+  return await createRecordService(params);
 }
 
 export async function updateRecordAction(

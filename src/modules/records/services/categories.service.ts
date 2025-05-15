@@ -1,5 +1,5 @@
 import { Params } from "@/design-system/types";
-import { getCurrentUser } from "@/modules/user/actions";
+import { authorized } from "@/modules/account/utils";
 import prisma from "@/prisma/index";
 import { Category } from "../types";
 
@@ -12,15 +12,7 @@ type CategoriesResponse = {
 export async function getCategoriesService(
   params: Params = {}
 ): Promise<CategoriesResponse> {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    return {
-      data: null,
-      message: "Unauthorized",
-      error: "Unauthorized",
-    };
-  }
+  const { data: user } = await authorized();
 
   const categories = await prisma.category.findMany({
     ...params,
@@ -41,6 +33,43 @@ export async function getCategoriesService(
   return {
     data: categories as Category[],
     message: "Categories found successfully",
+    error: null,
+  };
+}
+
+export async function createCategoryService(
+  categoryData: Pick<Category, "name" | "type">
+) {
+  const { data: user } = await authorized();
+
+  const category = await prisma.category.create({
+    data: {
+      name: categoryData.name,
+      type: categoryData.type,
+      createdById: user.id,
+    },
+  });
+
+  return {
+    data: category as Category,
+    message: "Category created successfully",
+    error: null,
+  };
+}
+
+export async function deleteCategoryService(id: string) {
+  const { data: user } = await authorized();
+
+  const category = await prisma.category.delete({
+    where: {
+      id,
+      createdById: user.id,
+    },
+  });
+
+  return {
+    data: category as Category,
+    message: "Category deleted successfully",
     error: null,
   };
 }

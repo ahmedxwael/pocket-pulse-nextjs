@@ -3,7 +3,11 @@ import { useEffect, useState } from "react";
 import { getCurrentUser } from "../actions";
 import { User } from "../types";
 
-export function useUser() {
+type UseUserProps = {
+  init?: boolean;
+};
+
+export function useUser({ init = false }: UseUserProps = {}) {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
@@ -21,8 +25,8 @@ export function useUser() {
   };
 
   useEffect(() => {
-    load();
-  }, []);
+    if (init && !user) load();
+  }, [init, user]);
 
   return {
     user,

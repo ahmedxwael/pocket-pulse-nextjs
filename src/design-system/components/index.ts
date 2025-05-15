@@ -1,3 +1,4 @@
+export * from "./DataTable";
 export * from "./Form";
 export * from "./GlowingElements";
 export * from "./LoadingOverlay";

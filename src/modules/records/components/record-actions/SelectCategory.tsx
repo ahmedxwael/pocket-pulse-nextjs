@@ -1,7 +1,7 @@
 "use client";
 
 import { SelectInput } from "@/design-system/components";
-import { useCategories } from "../../hooks";
+import { useCategories } from "@/modules/records/hooks";
 import { NewCategoryDialog } from "./NewCategoryDialog";
 
 type SelectCategoryProps = {
@@ -9,7 +9,7 @@ type SelectCategoryProps = {
   disabled?: boolean;
   defaultValue?: string;
   className?: string;
-  options?: string[];
+  options?: { label: string; value: string }[];
 };
 
 export function SelectCategory({
@@ -19,7 +19,7 @@ export function SelectCategory({
   defaultValue,
   options,
 }: SelectCategoryProps) {
-  const { categories } = useCategories();
+  const { categories, load, loading } = useCategories();
 
   return (
     <div className="flex items-center gap-2">
@@ -29,9 +29,18 @@ export function SelectCategory({
         disabled={disabled}
         className={className}
         onValueChange={onChange}
-        defaultValue={defaultValue || categories[0]?.id}
+        onInit={(value) => onChange?.(value)}
+        onOpenChange={load}
+        isLoading={loading}
+        defaultValue={defaultValue}
         placeholder="Select Category"
-        options={options || categories.map((category) => category.name)}>
+        options={
+          options ||
+          categories.map((category) => ({
+            label: category.name,
+            value: category.id,
+          }))
+        }>
         <NewCategoryDialog />
       </SelectInput>
     </div>

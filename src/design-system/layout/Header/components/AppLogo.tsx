@@ -14,7 +14,7 @@ export function AppLogo({ className }: AppLogoProps) {
       <Link
         href={URLS.home}
         className={cn(
-          "text-xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent font-extrabold",
+          "text-xl bg-gradient-to-r from-primary to-primary/50 bg-clip-text text-transparent font-extrabold",
           className
         )}>
         {appName}

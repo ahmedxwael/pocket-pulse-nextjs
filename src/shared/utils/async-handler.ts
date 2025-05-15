@@ -1,13 +1,9 @@
 export async function asyncHandler(handler: any) {
   return async (...T: any) => {
     try {
-      return await handler(T);
+      return await handler(...T);
     } catch (error: any) {
-      return {
-        data: null,
-        message: "Something went wrong!",
-        error: error.message,
-      };
+      throw new Error(error);
     }
   };
 }
