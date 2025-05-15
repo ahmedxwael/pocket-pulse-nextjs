@@ -10,6 +10,25 @@ import {
   RecordsParams,
 } from "../types";
 
+const getTransactionUpdate = (
+  type: string,
+  amount: number,
+  currentBalance: number
+) => {
+  const isExpense = type === "EXPENSE" || type === "TRANSFER";
+  const isIncome = type === "INCOME" || type === "TRANSFER";
+
+  return {
+    expensesCount: isExpense ? amount : 0,
+    incomesCount: isIncome ? amount : 0,
+    balance: isIncome
+      ? currentBalance + amount
+      : isExpense
+        ? currentBalance - amount
+        : currentBalance,
+  };
+};
+
 export const getRecordsService = await asyncHandler(
   async (params = {} as RecordsParams) => {
     const { data: user } = await authorized();
@@ -81,21 +100,8 @@ export const createRecordService = await asyncHandler(
     });
 
     const updatedUser = await prisma.user.update({
-      where: {
-        id: user.id,
-      },
-      data: {
-        expensesCount:
-          data.type === "EXPENSE" || data.type === "TRANSFER" ? data.amount : 0,
-        incomesCount:
-          data.type === "INCOME" || data.type === "TRANSFER" ? data.amount : 0,
-        balance:
-          data.type === "INCOME"
-            ? user.balance + data.amount
-            : data.type === "EXPENSE" || data.type === "TRANSFER"
-              ? user.balance - data.amount
-              : user.balance,
-      },
+      where: { id: user.id },
+      data: getTransactionUpdate(data.type, data.amount, user.balance),
     });
 
     await cookies().set(USER_SESSION_KEY, updatedUser);
