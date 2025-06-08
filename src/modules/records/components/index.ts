@@ -1,2 +1,2 @@
-export * from "./record-actions";
+export * from "./actions";
 export * from "./Type";
