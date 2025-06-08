@@ -19,6 +19,7 @@ import { loadingOverlayStore } from "@/design-system/stores";
 import { signOutAction as signOut } from "@/modules/auth/actions";
 import { updateUser } from "@/modules/user/actions";
 import { useUser } from "@/modules/user/hooks";
+import { appName } from "@/shared/environments";
 import { URLS } from "@/shared/urls";
 import { ArrowLeftIcon } from "lucide-react";
 import { motion } from "motion/react";
@@ -32,7 +33,7 @@ type InputFields = {
 
 export function NewUserLayout() {
   const { setLoading } = loadingOverlayStore();
-  const { user, loading } = useUser();
+  const { user, loading } = useUser({ init: true });
   const router = useRouter();
 
   const {
@@ -98,7 +99,7 @@ export function NewUserLayout() {
         <Card className="shadow-xl">
           <CardHeader>
             <CardTitle className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary text-transparent bg-clip-text">
-              Welcome to PocketPulse!
+              Welcome to {appName}!
             </CardTitle>
             <CardDescription className="text-xl mt-3">
               {
@@ -112,7 +113,11 @@ export function NewUserLayout() {
                 id="currency"
                 label="Currency"
                 defaultValue="USD"
-                options={["USD", "POUND"]}
+                onInit={(value) => setValue("currency", value)}
+                options={[
+                  { label: "USD", value: "USD" },
+                  { label: "POUND", value: "POUND" },
+                ]}
                 onValueChange={(value) => setValue("currency", value)}
               />
 

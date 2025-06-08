@@ -1,6 +1,6 @@
 import { reverseGuardedRoute } from "@/lib";
 import { SignInPageContent } from "@/modules/user/pages/SignInPageContent";
-import { appName } from "@/shared/flags";
+import { appName } from "@/shared/environments";
 
 export const metadata = {
   title: `Sign In | ${appName}`,

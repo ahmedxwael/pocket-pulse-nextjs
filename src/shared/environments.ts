@@ -10,3 +10,4 @@ export const googleClientId = process.env.AUTH_GOOGLE_ID;
 export const googleClientSecret = process.env.AUTH_GOOGLE_SECRET;
 export const githubClientId = process.env.AUTH_GITHUB_ID;
 export const githubClientSecret = process.env.AUTH_GITHUB_SECRET;
+export const appPrefix = process.env.NEXT_PUBLIC_APP_PREFIX;

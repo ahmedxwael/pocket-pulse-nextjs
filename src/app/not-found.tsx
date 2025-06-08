@@ -1,6 +1,6 @@
 import { buttonVariants } from "@/design-system/components/ui/button";
 import { cn } from "@/lib/utils";
-import { appName } from "@/shared/flags";
+import { appName } from "@/shared/environments";
 import { URLS } from "@/shared/urls";
 import { Metadata } from "next";
 import Link from "next/link";

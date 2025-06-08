@@ -1,3 +1,5 @@
+"use client";
+
 import { toastError } from "@/design-system/components";
 import { useEffect, useState } from "react";
 import { getCurrentUser } from "../actions";

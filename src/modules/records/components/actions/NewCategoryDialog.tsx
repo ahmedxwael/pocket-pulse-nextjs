@@ -1,10 +1,7 @@
 "use client";
 
-import {
-  SelectInput,
-  SubmitButton,
-  TextInput,
-} from "@/design-system/components/Form";
+import { toastError, toastSuccess } from "@/design-system/components";
+import { SubmitButton, TextInput } from "@/design-system/components/Form";
 import { Button } from "@/design-system/components/ui/button";
 import {
   Dialog,
@@ -13,38 +10,44 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/design-system/components/ui/dialog";
+import { useUser } from "@/modules/user/hooks";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useCategories } from "../../hooks";
-import { Type } from "../../types";
 
 type InputFields = {
   name: string;
-  type: Type;
 };
 
 export function NewCategoryDialog() {
+  const { user } = useUser();
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const { add } = useCategories();
 
   const {
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     register,
-    setValue,
     reset,
   } = useForm<InputFields>();
 
   const onSubmit: SubmitHandler<InputFields> = async (data) => {
-    await add({
-      name: data.name,
-      type: data.type,
-      createdById: "",
-    });
+    if (!user) return;
 
-    setDialogOpen(false);
-    reset();
+    try {
+      await add({
+        name: data.name,
+        createdById: user.id,
+      });
+
+      setDialogOpen(false);
+      toastSuccess("Category created successfully");
+      reset();
+    } catch (e) {
+      toastError("Couldn't add the category");
+    }
   };
 
   return (
@@ -79,23 +82,6 @@ export function NewCategoryDialog() {
             })}
             error={errors.name?.message}
           />
-          <SelectInput
-            id="type"
-            label="Type"
-            defaultValue="INCOME"
-            options={[
-              { label: "Income", value: "INCOME" },
-              { label: "Expense", value: "EXPENSE" },
-              { label: "Saving", value: "SAVING" },
-              { label: "Transfer", value: "TRANSFER" },
-              { label: "Allocation", value: "ALLOCATION" },
-            ]}
-            onValueChange={(value) => setValue("type", value as Type)}
-            onInit={(value) => setValue("type", value as Type)}
-            required
-            disabled={isSubmitting}
-          />
-
           <SubmitButton className="grow sm:grow-0 sm:min-w-[120px]" />
         </form>
       </DialogContent>

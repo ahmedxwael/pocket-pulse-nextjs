@@ -1,5 +1,5 @@
 import { SignUpPageContent } from "@/modules/user/pages/SignUpPageContent";
-import { appName } from "@/shared/flags";
+import { appName } from "@/shared/environments";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

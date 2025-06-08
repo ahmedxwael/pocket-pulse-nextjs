@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { getCurrentUser } from "@/modules/user/actions";
 import { UserProvider } from "@/providers";
 import { ThemeProvider } from "@/providers/ThemeProvider";
-import { appName } from "@/shared/flags";
+import { appName } from "@/shared/environments";
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";

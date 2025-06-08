@@ -42,8 +42,8 @@ export function UserAuthButtons({ user }: UserAuthButtonsProps) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="flex items-center gap-2 px-2">
           <Image
-            src={user.image || ""}
-            alt={user.name || ""}
+            src={user.image || user.name[0]}
+            alt={user.name}
             width={40}
             height={40}
             className="w-8 h-8 rounded-full"

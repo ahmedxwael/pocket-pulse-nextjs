@@ -1,3 +1,5 @@
+"use client";
+
 import { toastError, toastSuccess } from "@/design-system/components";
 import { loadingOverlayStore } from "@/design-system/stores";
 import { useEffect, useState } from "react";
@@ -31,26 +33,34 @@ export function useCategories({ init = false }: UseCategoriesProps = {}) {
       setCategories(data || []);
       cachedCategories = data || [];
     } catch (e) {
-      console.log(e);
       toastError("Couldn't get the categories");
     } finally {
       setLoading(false);
     }
   };
 
-  const add = async (
-    category: Pick<Category, "name" | "type" | "createdById">
-  ) => {
+  const add = async (category: Pick<Category, "name" | "createdById">) => {
     try {
       setLoadingOverlay(true);
-      const { data } = await createCategoryAction(category);
+      const { data } = await createCategoryAction({
+        data: category,
+      });
 
-      setCategories((prev) => [...prev, data]);
+      if (!data) {
+        toastError("Couldn't add the category");
+        return;
+      }
+
+      setCategories((prev) => {
+        const updated = [...prev];
+        updated.push(data);
+        return updated;
+      });
+
       cachedCategories.push(data);
 
       toastSuccess("Category created successfully");
     } catch (e) {
-      console.log(e);
       toastError("Couldn't add the category");
     } finally {
       setLoadingOverlay(false);
@@ -67,7 +77,6 @@ export function useCategories({ init = false }: UseCategoriesProps = {}) {
       );
       toastSuccess("Category deleted successfully");
     } catch (e) {
-      console.log(e);
       toastError("Couldn't delete the category");
     } finally {
       setLoadingOverlay(false);

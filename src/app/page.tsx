@@ -1,6 +1,6 @@
 import { guardedRoute } from "@/lib";
 import { HomePageContent } from "@/modules/home/pages/HomePageContent";
-import { appName } from "@/shared/flags";
+import { appName } from "@/shared/environments";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

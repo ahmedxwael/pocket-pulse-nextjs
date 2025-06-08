@@ -1,75 +1,108 @@
-import { Params } from "@/design-system/types";
 import { authorized } from "@/modules/account/utils";
 import prisma from "@/prisma/index";
-import { Category } from "../types";
+import { asyncHandler } from "@/shared/utils";
+import {
+  CategoryGeneralParams,
+  CategoryListResponse,
+  CategoryPostParams,
+  CategoryResponse,
+} from "../types";
 
-type CategoriesResponse = {
-  data: Category[] | null;
-  message: string;
-  error: string | null;
-};
+/**
+ * Retrieve categories
+ */
+export const getCategoriesService: (
+  params?: CategoryGeneralParams
+) => Promise<CategoryListResponse> = await asyncHandler(
+  async (params = {} as CategoryGeneralParams) => {
+    const { user } = await authorized();
 
-export async function getCategoriesService(
-  params: Params = {}
-): Promise<CategoriesResponse> {
-  const { data: user } = await authorized();
+    const categories = await prisma.category.findMany({
+      ...params,
+      where: {
+        ...params.where,
+        createdById: user.id,
+      },
+    });
 
-  const categories = await prisma.category.findMany({
-    ...params,
-    where: {
-      ...params.where,
-      createdById: user.id,
-    },
-  });
-
-  if (!categories) {
     return {
-      data: null,
-      message: "No categories found",
+      data: categories,
+      message: "Categories found successfully",
       error: null,
     };
   }
+);
 
-  return {
-    data: categories as Category[],
-    message: "Categories found successfully",
-    error: null,
-  };
-}
+/**
+ * Retrieve a single category
+ */
+export const getCategoryService: (
+  id: string,
+  params?: CategoryGeneralParams
+) => Promise<CategoryResponse> = await asyncHandler(
+  async (id: string, params: CategoryGeneralParams = {}) => {
+    const { user } = await authorized();
 
-export async function createCategoryService(
-  categoryData: Pick<Category, "name" | "type">
-) {
-  const { data: user } = await authorized();
+    const category = await prisma.category.findUnique({
+      ...params,
+      where: {
+        ...(params?.where || {}),
+        id,
+        createdById: user.id,
+      },
+    });
 
-  const category = await prisma.category.create({
-    data: {
-      name: categoryData.name,
-      type: categoryData.type,
-      createdById: user.id,
-    },
+    return {
+      data: category,
+      message: "Category found successfully",
+      error: null,
+    };
+  }
+);
+
+/**
+ * Create a new category
+ */
+export const createCategoryService: (
+  params: CategoryPostParams
+) => Promise<CategoryResponse> = await asyncHandler(
+  async (params: CategoryPostParams) => {
+    const { data } = params;
+    const { user } = await authorized();
+
+    const category = await prisma.category.create({
+      ...params,
+      data: {
+        name: data.name,
+        createdById: user.id,
+      },
+    });
+
+    return {
+      data: category,
+      message: "Category created successfully",
+      error: null,
+    };
+  }
+);
+
+/**
+ * Delete a category
+ */
+export const deleteCategoryService: (id: string) => Promise<CategoryResponse> =
+  await asyncHandler(async (id: string) => {
+    const { user } = await authorized();
+
+    const category = await prisma.category.delete({
+      where: {
+        id,
+        createdById: user.id,
+      },
+    });
+
+    return {
+      data: category,
+      message: "Category deleted successfully",
+      error: null,
+    };
   });
-
-  return {
-    data: category as Category,
-    message: "Category created successfully",
-    error: null,
-  };
-}
-
-export async function deleteCategoryService(id: string) {
-  const { data: user } = await authorized();
-
-  const category = await prisma.category.delete({
-    where: {
-      id,
-      createdById: user.id,
-    },
-  });
-
-  return {
-    data: category as Category,
-    message: "Category deleted successfully",
-    error: null,
-  };
-}

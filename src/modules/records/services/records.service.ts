@@ -1,37 +1,26 @@
 import { authorized } from "@/modules/account/utils";
+import { getTransactionUpdates } from "@/modules/user/utils/get-transaction-updates";
 import prisma from "@/prisma/index";
 import { cookies } from "@/shared/config";
 import { asyncHandler, USER_SESSION_KEY } from "@/shared/utils";
 import {
   Record,
   RecordGeneralParams,
+  RecordListResponse,
   RecordPostParams,
   RecordPutParams,
+  RecordResponse,
   RecordsParams,
 } from "../types";
 
-const getTransactionUpdate = (
-  type: string,
-  amount: number,
-  currentBalance: number
-) => {
-  const isExpense = type === "EXPENSE" || type === "TRANSFER";
-  const isIncome = type === "INCOME" || type === "TRANSFER";
-
-  return {
-    expensesCount: isExpense ? amount : 0,
-    incomesCount: isIncome ? amount : 0,
-    balance: isIncome
-      ? currentBalance + amount
-      : isExpense
-        ? currentBalance - amount
-        : currentBalance,
-  };
-};
-
-export const getRecordsService = await asyncHandler(
+/**
+ * Retrieve records
+ */
+export const getRecordsService: (
+  params?: RecordsParams
+) => Promise<RecordListResponse> = await asyncHandler(
   async (params = {} as RecordsParams) => {
-    const { data: user } = await authorized();
+    const { user } = await authorized();
 
     const records = await prisma.record.findMany({
       ...params,
@@ -51,12 +40,15 @@ export const getRecordsService = await asyncHandler(
   }
 );
 
-export const getRecordService = await asyncHandler(
-  async (
-    id: string,
-    params: RecordGeneralParams = {} as RecordGeneralParams
-  ) => {
-    const { data: user } = await authorized();
+/**
+ * Retrieve a single record
+ */
+export const getRecordService: (
+  id: string,
+  params?: RecordGeneralParams
+) => Promise<RecordResponse> = await asyncHandler(
+  async (id: string, params: RecordGeneralParams = {}) => {
+    const { user } = await authorized();
 
     const record = await prisma.record.findUnique({
       ...params,
@@ -67,99 +59,144 @@ export const getRecordService = await asyncHandler(
       },
     });
 
-    if (!record) {
-      return {
-        data: null,
-        message: "Record not found",
-        error: null,
-      };
-    }
-
     return {
-      data: record as Record,
+      data: record,
       message: "Record found successfully",
       error: null,
     };
   }
 );
 
-export const createRecordService = await asyncHandler(
-  async (params: RecordPostParams = {} as RecordPostParams) => {
+/**
+ * Create a new record
+ */
+export const createRecordService: (
+  params?: RecordPostParams
+) => Promise<RecordResponse> = await asyncHandler(
+  async (params = { data: {} } as RecordPostParams) => {
     const { data, ...rest } = params;
-    const { data: user } = await authorized();
+    const { user } = await authorized();
 
-    const record = await prisma.record.create({
-      ...rest,
-      data: {
-        amount: data.amount,
-        categoryId: data.categoryId,
-        description: data.description,
-        type: data.type,
-        userId: user.id,
-      },
-    });
-
-    const updatedUser = await prisma.user.update({
-      where: { id: user.id },
-      data: getTransactionUpdate(data.type, data.amount, user.balance),
-    });
+    const [record, updatedUser] = await prisma.$transaction([
+      prisma.record.create({
+        ...rest,
+        data: {
+          amount: data.amount,
+          categoryId: data.categoryId,
+          description: data.description,
+          type: data.type,
+          userId: user.id,
+        },
+      }),
+      prisma.user.update({
+        where: { id: user.id },
+        data: getTransactionUpdates({
+          type: data.type,
+          amount: data.amount,
+          user,
+        }),
+      }),
+    ]);
 
     await cookies().set(USER_SESSION_KEY, updatedUser);
 
     return {
-      data: record as Record,
+      data: record,
       message: "Record created successfully",
       error: null,
     };
   }
 );
 
-export const updateRecordService = await asyncHandler(
+/**
+ * Update a record
+ */
+export const updateRecordService: (
+  id: string,
+  data: Pick<Record, "description" | "amount" | "categoryId">,
+  params?: RecordPutParams
+) => Promise<RecordResponse> = await asyncHandler(
   async (
     id: string,
-    data: any,
-    params: RecordPutParams = {} as RecordPutParams
+    data: Pick<Record, "description" | "amount" | "categoryId">,
+    params = {} as RecordPutParams
   ) => {
-    const { data: user } = await authorized();
+    const { user } = await authorized();
 
-    const record = await prisma.record.update({
-      ...params,
-      where: {
-        ...(params?.where || {}),
-        id,
-        userId: user.id,
-      },
-      data,
-    });
+    const [record, updatedUser] = await prisma.$transaction([
+      prisma.record.update({
+        ...params,
+        where: {
+          ...(params?.where || {}),
+          id,
+          userId: user.id,
+        },
+        data,
+      }),
+      prisma.user.update({
+        where: { id: user.id },
+        data: getTransactionUpdates({
+          amount: data.amount,
+          user,
+        }),
+      }),
+    ]);
+
+    await cookies().set(USER_SESSION_KEY, updatedUser);
 
     return {
-      data: record as Record,
+      data: record,
       message: "Record updated successfully",
       error: null,
     };
   }
 );
 
-export const deleteRecordService = await asyncHandler(
-  async (
-    id: string,
-    params: RecordGeneralParams = {} as RecordGeneralParams
-  ) => {
-    const { data: user } = await authorized();
+/**
+ * Delete a record
+ */
+export const deleteRecordService: (id: string) => Promise<RecordResponse> =
+  await asyncHandler(async (id: string) => {
+    const { user } = await authorized();
 
-    const record = await prisma.record.delete({
-      ...params,
+    const record = await prisma.record.findUnique({
       where: {
-        ...(params?.where || {}),
         id,
         userId: user.id,
       },
+      select: {
+        type: true,
+        amount: true,
+      },
     });
 
+    if (!record) {
+      throw new Error("Record not found or not authorized");
+    }
+
+    const [deletedRecord, updatedUser] = await prisma.$transaction([
+      prisma.record.delete({
+        where: {
+          id,
+          userId: user.id,
+        },
+      }),
+      prisma.user.update({
+        where: { id: user.id },
+        data: getTransactionUpdates({
+          type: record.type,
+          amount: record.amount,
+          user,
+          reverse: true,
+        }),
+      }),
+    ]);
+
+    await cookies().set(USER_SESSION_KEY, updatedUser);
+
     return {
-      data: record as Record,
+      data: deletedRecord,
       message: "Record deleted successfully",
       error: null,
     };
-  }
-);
+  });

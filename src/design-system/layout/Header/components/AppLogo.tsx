@@ -1,6 +1,6 @@
 import { Tooltip } from "@/design-system/components";
 import { cn } from "@/lib/utils";
-import { appName } from "@/shared/flags";
+import { appName } from "@/shared/environments";
 import { URLS } from "@/shared/urls";
 import Link from "next/link";
 

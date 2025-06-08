@@ -8,7 +8,7 @@ export async function authorized() {
   }
 
   return {
-    data: user,
+    user,
     message: "Authorized",
     error: null,
   };

@@ -4,7 +4,7 @@ import { EmailInput, SubmitButton } from "@/design-system/components/Form";
 import { Button } from "@/design-system/components/ui/button";
 import { GithubIcon, GoogleIcon } from "@/design-system/icons";
 import { signInAction } from "@/modules/auth/actions";
-import { appName } from "@/shared/flags";
+import { appName } from "@/shared/environments";
 import { URLS } from "@/shared/urls";
 import { Loader } from "lucide-react";
 import Link from "next/link";

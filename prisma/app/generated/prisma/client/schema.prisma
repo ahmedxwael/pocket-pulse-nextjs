@@ -17,8 +17,8 @@ datasource db {
 model User {
   id            String     @id @default(auto()) @map("_id") @db.ObjectId
   email         String     @unique
-  password      String?
   name          String
+  image         String?
   role          Role       @default(USER)
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
@@ -27,54 +27,85 @@ model User {
   newUser       Boolean    @default(true)
   incomesCount  Float      @default(0)
   expensesCount Float      @default(0)
-  records       Record[]
+  savingsCount  Float      @default(0)
+  goalsCount    Float      @default(0)
+  incomes       Income[]
+  expenses      Expense[]
   categories    Category[]
+  goals         Goal[]
   provider      String?
   emailVerified DateTime?
   isVerified    Boolean    @default(false)
-  image         String?
   sessions      Session[]
   accounts      Account[]
 
   @@map("user")
 }
 
-model Record {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId
-  amount       Float
-  targetAmount Float?
-  description  String
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  userId       String    @db.ObjectId
-  user         User      @relation(fields: [userId], references: [id])
-  category     Category? @relation(fields: [categoryId], references: [id])
-  categoryId   String?   @db.ObjectId
-  type         Type      @default(INCOME)
+model Income {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  amount      Float
+  description String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  userId      String    @db.ObjectId
+  user        User      @relation(fields: [userId], references: [id])
+  category    Category? @relation(fields: [categoryId], references: [id])
+  categoryId  String?   @db.ObjectId
+  notes       String?
+  goalId      String?   @db.ObjectId
+  goal        Goal?     @relation(fields: [goalId], references: [id])
 
   @@index([userId])
   @@index([categoryId])
-  @@index([type])
-  @@map("record")
+  @@map("income")
+}
+
+model Expense {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  amount      Float
+  description String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  userId      String    @db.ObjectId
+  user        User      @relation(fields: [userId], references: [id])
+  category    Category? @relation(fields: [categoryId], references: [id])
+  categoryId  String?   @db.ObjectId
+  notes       String?
+
+  @@index([userId])
+  @@index([categoryId])
+  @@map("expense")
 }
 
 model Category {
-  id            String     @id @default(auto()) @map("_id") @db.ObjectId
-  name          String     @unique
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  createdBy     User       @relation(fields: [createdById], references: [id])
-  createdById   String     @db.ObjectId
-  records       Record[]
-  subCategories Category[] @relation("ParentCategory")
-  parentId      String?    @db.ObjectId
-  parent        Category?  @relation("ParentCategory", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  type          Type
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String    @unique
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  createdBy   User      @relation(fields: [createdById], references: [id])
+  createdById String    @db.ObjectId
+  incomes     Income[]
+  expenses    Expense[]
 
   @@index([createdById])
-  @@index([parentId])
-  @@index([type])
   @@map("category")
+}
+
+model Goal {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  targetAmount  Float
+  currentAmount Float    @default(0)
+  user          User     @relation(fields: [userId], references: [id])
+  userId        String   @db.ObjectId
+  incomes       Income[]
+  deadline      DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([userId])
+  @@map("goal")
 }
 
 enum Role {
@@ -85,14 +116,6 @@ enum Role {
 enum Currency {
   USD
   POUND
-}
-
-enum Type {
-  INCOME
-  EXPENSE
-  SAVING
-  TRANSFER
-  ALLOCATION
 }
 
 model Session {

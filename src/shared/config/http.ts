@@ -1,5 +1,5 @@
 import axios from "axios";
-import { appUrl } from "../flags";
+import { appUrl } from "../environments";
 
 export const apiHttp = axios.create({
   baseURL: "/api",

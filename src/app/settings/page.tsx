@@ -1,5 +1,5 @@
 import { SettingsPageContent } from "@/modules/settings/pages/settings-page";
-import { appName } from "@/shared/flags";
+import { appName } from "@/shared/environments";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

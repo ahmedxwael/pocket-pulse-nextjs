@@ -1,5 +1,6 @@
 import { cookies as nextCookies } from "next/headers";
 import { removeCookieAction, setCookieAction } from "../actions";
+import { appPrefix } from "../environments";
 
 type CookieOptions = {
   value: any; // Consider being more specific than 'any'
@@ -48,7 +49,8 @@ export class CookieManager {
   /**
    * Get a cookie value by name
    */
-  public async get(name: string) {
+  public async get(key: string) {
+    const name = `${appPrefix}${key}`;
     if (!this._cookies) {
       await this.parseCookies();
     }
@@ -68,7 +70,7 @@ export class CookieManager {
    * Set a cookie with the given name and value
    */
   public async set(
-    name: string,
+    key: string,
     value: any,
     cookieOptions: Omit<CookieOptions, "value"> = {
       path: "/",
@@ -77,6 +79,8 @@ export class CookieManager {
       sameSite: "none",
     }
   ) {
+    const name = `${appPrefix}${key}`;
+
     if (!this._cookies) {
       await this.parseCookies();
     }
@@ -102,7 +106,9 @@ export class CookieManager {
   /**
    * Remove a cookie by name
    */
-  public async remove(name: string) {
+  public async remove(key: string) {
+    const name = `${appPrefix}${key}`;
+
     delete this.cookies[name];
     await removeCookieAction(name);
   }

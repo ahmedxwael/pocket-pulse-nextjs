@@ -7,4 +7,7 @@ export const URLS = {
   settings: "/settings",
   privacyPolicy: "/privacy-policy",
   termsOfService: "/terms-of-service",
+  transactions: "/transactions",
+  goals: "/goals",
+  categories: "/categories",
 };

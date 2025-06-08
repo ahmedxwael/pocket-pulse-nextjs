@@ -20,7 +20,7 @@ export async function getUser(email: string) {
 }
 
 export async function updateUser(id: string, data: any) {
-  const updatedUser = await updateUserService({ id, data });
+  const { data: updatedUser } = await updateUserService({ id, data });
 
   await cookies().set(USER_SESSION_KEY, updatedUser);
 }
