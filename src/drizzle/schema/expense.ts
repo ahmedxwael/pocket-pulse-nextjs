@@ -1,0 +1,32 @@
+import { relations } from "drizzle-orm";
+import { integer, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
+import { categories } from "./category";
+import { goals } from "./goal";
+import { users } from "./user";
+
+export const expenses = pgTable("expenses", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer().notNull(),
+  amount: integer().notNull(),
+  title: varchar({ length: 255 }).notNull().default(""),
+  note: varchar({ length: 255 }).notNull().default(""),
+  categoryId: integer(),
+  goalId: integer(),
+  createdAt: timestamp().defaultNow(),
+  updatedAt: timestamp().defaultNow(),
+});
+
+export const expenseRelations = relations(expenses, ({ one }) => ({
+  user: one(users, {
+    fields: [expenses.userId],
+    references: [users.id],
+  }),
+  category: one(categories, {
+    fields: [expenses.categoryId],
+    references: [categories.id],
+  }),
+  goal: one(goals, {
+    fields: [expenses.goalId],
+    references: [goals.id],
+  }),
+}));

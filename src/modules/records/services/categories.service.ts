@@ -1,81 +1,69 @@
+import { db } from "@/drizzle";
+import { categories } from "@/drizzle/schema";
 import { authorized } from "@/modules/account/utils";
-import prisma from "@/prisma/config";
 import { asyncHandler } from "@/shared/utils";
-import {
-  CategoryGeneralParams,
-  CategoryListResponse,
-  CategoryPostParams,
-  CategoryResponse,
-} from "../types";
+import { and, eq } from "drizzle-orm";
+import { CategoryData, CategoryListResponse, CategoryResponse } from "../types";
 
 /**
  * Retrieve categories
  */
-export const getCategoriesService: (
-  params?: CategoryGeneralParams
-) => Promise<CategoryListResponse> = await asyncHandler(
-  async (params = {} as CategoryGeneralParams) => {
+export const getCategoriesService: () => Promise<CategoryListResponse> =
+  await asyncHandler(async () => {
     const { user } = await authorized();
 
-    const categories = await prisma.category.findMany({
-      ...params,
-      where: {
-        ...params.where,
-        createdById: user.id,
-      },
+    const records = await db.query.categories.findMany({
+      where: eq(categories.userId, parseInt(user.id)),
     });
 
     return {
-      data: categories,
+      data: records,
       message: "Categories found successfully",
       error: null,
     };
-  }
-);
+  });
 
 /**
  * Retrieve a single category
  */
-export const getCategoryService: (
-  id: string,
-  params?: CategoryGeneralParams
-) => Promise<CategoryResponse> = await asyncHandler(
-  async (id: string, params: CategoryGeneralParams = {}) => {
+export const getCategoryService: (id: string) => Promise<CategoryResponse> =
+  await asyncHandler(async (id: string) => {
     const { user } = await authorized();
 
-    const category = await prisma.category.findUnique({
-      ...params,
-      where: {
-        ...(params?.where || {}),
-        id,
-        createdById: user.id,
-      },
+    const category = await db.query.categories.findFirst({
+      where: and(
+        eq(categories.id, parseInt(id)),
+        eq(categories.userId, parseInt(user.id))
+      ),
     });
+
+    if (!category) {
+      return {
+        data: null,
+        message: "Category not found",
+        error: "Category not found",
+      };
+    }
 
     return {
       data: category,
       message: "Category found successfully",
       error: null,
     };
-  }
-);
+  });
 
 /**
  * Create a new category
  */
 export const createCategoryService: (
-  params: CategoryPostParams
+  data: CategoryData
 ) => Promise<CategoryResponse> = await asyncHandler(
-  async (params: CategoryPostParams) => {
-    const { data } = params;
+  async (data: CategoryData) => {
     const { user } = await authorized();
 
-    const category = await prisma.category.create({
-      ...params,
-      data: {
-        name: data.name,
-        createdById: user.id,
-      },
+    const category = await db.insert(categories).values({
+      name: data.name,
+      userId: parseInt(user.id),
     });
 
     return {
@@ -93,12 +81,14 @@ export const deleteCategoryService: (id: string) => Promise<CategoryResponse> =
   await asyncHandler(async (id: string) => {
     const { user } = await authorized();
 
-    const category = await prisma.category.delete({
-      where: {
-        id,
-        createdById: user.id,
-      },
-    });
+    const category = await db
+      .delete(categories)
+      .where(
+        and(
+          eq(categories.id, parseInt(id)),
+          eq(categories.userId, parseInt(user.id))
+        )
+      );
 
     return {
       data: category,

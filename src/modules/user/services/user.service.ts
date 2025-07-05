@@ -1,4 +1,6 @@
-import prisma from "@/prisma/config";
+import { db } from "@/drizzle";
+import { users } from "@/drizzle/schema/user";
+import { eq } from "drizzle-orm";
 import type { Account, User } from "next-auth";
 
 /**
@@ -15,10 +17,8 @@ export async function getUserService(email: string) {
     };
   }
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email,
-    },
+  const user = await db.query.users.findFirst({
+    where: eq(users.email, email),
   });
 
   if (!user) {
@@ -44,7 +44,6 @@ export async function getUserService(email: string) {
  */
 export async function createUserService({
   user,
-  account,
 }: {
   user: User;
   account?: Account | null;
@@ -57,17 +56,31 @@ export async function createUserService({
     };
   }
 
-  const newUser = await prisma.user.create({
-    data: {
+  const newUser = await db
+    .insert(users)
+    .values({
       email: user.email!,
       name: user.name!,
-      image: user.image,
-      provider: account?.provider || null,
-    },
-  });
+      image: user.image || `https://ui-avatars.com/api/?name=${user.name}`,
+    })
+    .returning({
+      id: users.id,
+      email: users.email,
+      name: users.name,
+      role: users.role,
+      createdAt: users.createdAt,
+      updatedAt: users.updatedAt,
+      balance: users.balance,
+      currency: users.currency,
+      newUser: users.newUser,
+      incomesCount: users.incomesCount,
+      expensesCount: users.expensesCount,
+      emailVerified: users.emailVerified,
+      image: users.image,
+    });
 
   return {
-    data: newUser,
+    data: newUser[0],
     message: "User created successfully!",
     error: null,
   };
@@ -87,12 +100,11 @@ export async function updateUserService({
   data: any;
 }) {
   try {
-    const updatedUser = await prisma.user.update({
-      where: {
-        id: id,
-      },
-      data,
-    });
+    const updatedUser = await db
+      .update(users)
+      .set(data)
+      .where(eq(users.id, parseInt(id)))
+      .returning();
 
     return {
       data: updatedUser,

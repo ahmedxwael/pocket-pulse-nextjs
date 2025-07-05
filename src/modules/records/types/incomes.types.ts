@@ -1,17 +1,28 @@
 import { User } from "@/modules/user/types";
-import { Prisma } from "@prisma/client";
-import { Category } from ".";
+import { GenericObject } from "@/shared/types";
+import { Category, Goal } from ".";
 
 export type Income = {
   id: string;
-  description: string;
+  title: string;
+  note: string;
   amount: number;
   createdAt: Date;
   updatedAt: Date;
   user?: User;
   userId: string;
   category?: Category;
-  categoryId?: string;
+  categoryId?: number;
+  goal?: Goal;
+  goalId?: number;
+};
+
+export type IncomeData = {
+  title: string;
+  note: string;
+  amount: number;
+  categoryId?: number;
+  goalId?: number;
 };
 
 export type IncomeResponse = {
@@ -26,36 +37,4 @@ export type IncomesListResponse = {
   error: any;
 };
 
-export type IncomesParams = {
-  where?: Prisma.IncomeWhereUniqueInput;
-  select?: Prisma.IncomeSelect;
-  include?: Prisma.IncomeInclude;
-  omit?: Prisma.IncomeOmit;
-  orderBy?: Prisma.IncomeOrderByWithRelationInput;
-  skip?: number;
-  take?: number;
-  cursor?: Prisma.IncomeWhereUniqueInput;
-  distinct?: Prisma.IncomeScalarFieldEnum[];
-};
-
-export type IncomesGeneralParams = {
-  where?: Prisma.IncomeWhereUniqueInput;
-  select?: Prisma.IncomeSelect;
-  include?: Prisma.IncomeInclude;
-  omit?: Prisma.IncomeOmit;
-};
-
-export type IncomesPostParams = {
-  data: any;
-  select?: Prisma.IncomeSelect;
-  include?: Prisma.IncomeInclude;
-  omit?: Prisma.IncomeOmit;
-};
-
-export type IncomesPutParams = {
-  where?: Prisma.IncomeWhereUniqueInput;
-  data: any;
-  select?: Prisma.IncomeSelect;
-  include?: Prisma.IncomeInclude;
-  omit?: Prisma.IncomeOmit;
-};
+export type Params = GenericObject;

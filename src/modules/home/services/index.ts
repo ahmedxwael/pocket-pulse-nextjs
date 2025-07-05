@@ -1,10 +1,13 @@
-import prisma from "@/prisma/config";
+import { db } from "@/drizzle";
+import { incomes } from "@/drizzle/schema";
+import { authorized } from "@/modules/account/utils";
+import { eq } from "drizzle-orm";
 
-export async function getOverviewRecords() {
-  const records = await prisma.income.findMany({
-    where: {
-      userId: "",
-    },
+export const getOverviewRecords = async () => {
+  const { user } = await authorized();
+
+  const records = await db.query.incomes.findMany({
+    where: eq(incomes.userId, parseInt(user.id)),
   });
 
   if (!records || records.length === 0) {
@@ -20,4 +23,4 @@ export async function getOverviewRecords() {
     message: "Records found successfully",
     error: null,
   };
-}
+};

@@ -1,110 +1,109 @@
+import { db } from "@/drizzle";
+import { incomes, users } from "@/drizzle/schema";
 import { authorized } from "@/modules/account/utils";
-import prisma from "@/prisma/config";
 import { asyncHandler } from "@/shared/utils";
+import { and, eq, sql } from "drizzle-orm";
 import {
   Income,
+  IncomeData,
   IncomeResponse,
   IncomesListResponse,
-  IncomesParams,
-  IncomesPostParams,
-  IncomesPutParams,
 } from "../types";
 
 /**
  * Retrieve records
  */
-export const getIncomesService: (
-  params?: IncomesParams
-) => Promise<IncomesListResponse> = await asyncHandler(
-  async (params = {} as IncomesParams) => {
+export const getIncomesService: () => Promise<IncomesListResponse> =
+  await asyncHandler(async () => {
     const { user } = await authorized();
 
-    const records = await prisma.income.findMany({
-      ...params,
+    const records = await db.query.incomes.findMany({
+      where: eq(incomes.userId, parseInt(user.id)),
 
-      where: {
-        ...params.where,
-
-        userId: user.id,
+      with: {
+        category: true,
+        goal: true,
       },
     });
 
     return {
-      data: records as Income[],
+      data: records as unknown as Income[],
       message: "Records found successfully",
       error: null,
     };
-  }
-);
+  });
 
 /**
  * Create a new record
  */
 export const createIncomeService: (
-  params?: IncomesPostParams
-) => Promise<IncomeResponse> = await asyncHandler(
-  async (params = { data: {} } as IncomesPostParams) => {
-    const { data, ...rest } = params;
-    const { user } = await authorized();
+  data: IncomeData
+) => Promise<IncomeResponse> = await asyncHandler(async (data: IncomeData) => {
+  const { user } = await authorized();
 
-    console.log("data", data);
+  const record = await db
+    .insert(incomes)
+    .values({
+      amount: data.amount,
+      title: data.title,
+      note: data.note,
+      categoryId: data.categoryId,
+      goalId: data.goalId,
+      userId: parseInt(user.id),
+    })
+    .returning();
 
-    const [record] = await prisma.$transaction([
-      prisma.income.create({
-        ...rest,
-        data: {
-          amount: data.amount,
-          // categoryId: data.categoryId,
-          description: data.description,
-          userId: user.id,
-        },
-      }),
-      prisma.user.update({
-        where: { id: user.id },
-        data: {},
-      }),
-    ]);
-
-    // await cookies().set(USER_SESSION_KEY, updatedUser);
-
-    return {
-      data: record,
-      message: "Record created successfully",
-      error: null,
-    };
+  if (!record) {
+    throw new Error("Record not created");
   }
-);
+
+  await db
+    .update(users)
+    .set({
+      incomesCount: sql`${users.incomesCount} + 1`,
+    })
+    .where(eq(users.id, parseInt(user.id)));
+
+  // await cookies().set(USER_SESSION_KEY, updatedUser);
+
+  return {
+    data: record,
+    message: "Record created successfully",
+    error: null,
+  };
+});
 
 /**
  * Update a record
  */
 export const updateIncomeService: (
   id: string,
-  data: Pick<Income, "description" | "amount" | "categoryId">,
-  params?: IncomesPutParams
+  data: IncomeData
 ) => Promise<IncomeResponse> = await asyncHandler(
-  async (
-    id: string,
-    data: Pick<Income, "description" | "amount" | "categoryId">,
-    params = {} as IncomesPutParams
-  ) => {
+  async (id: string, data: IncomeData) => {
     const { user } = await authorized();
 
-    const [record] = await prisma.$transaction([
-      prisma.income.update({
-        ...params,
-        where: {
-          ...(params?.where || {}),
-          id,
-          userId: user.id,
-        },
-        data,
-      }),
-      prisma.user.update({
-        where: { id: user.id },
-        data: {},
-      }),
-    ]);
+    const record = await db
+      .update(incomes)
+      .set({
+        ...data,
+        userId: parseInt(user.id),
+      })
+      .where(
+        and(eq(incomes.id, parseInt(id)), eq(incomes.userId, parseInt(user.id)))
+      )
+      .returning();
+
+    if (!record) {
+      throw new Error("Record not updated");
+    }
+
+    await db
+      .update(users)
+      .set({
+        incomesCount: sql`${users.incomesCount} + 1`,
+      })
+      .where(eq(users.id, parseInt(user.id)));
 
     // await cookies().set(USER_SESSION_KEY, updatedUser);
 
@@ -119,14 +118,15 @@ export const updateIncomeService: (
 /**
  * Delete a record
  */
-export const deleteIncomeService: (id: string) => Promise<IncomeResponse> =
-  await asyncHandler(async (id: string) => {
+export const deleteIncomeService: (id: number) => Promise<IncomeResponse> =
+  await asyncHandler(async (id: number) => {
     const { user } = await authorized();
 
-    const record = await prisma.income.findUnique({
-      where: {
-        id,
-        userId: user.id,
+    const record = await db.query.incomes.findFirst({
+      where: and(eq(incomes.id, id), eq(incomes.userId, parseInt(user.id))),
+      with: {
+        category: true,
+        goal: true,
       },
     });
 
@@ -134,18 +134,20 @@ export const deleteIncomeService: (id: string) => Promise<IncomeResponse> =
       throw new Error("Record not found or not authorized");
     }
 
-    const [deletedRecord] = await prisma.$transaction([
-      prisma.income.delete({
-        where: {
-          id,
-          userId: user.id,
-        },
-      }),
-      prisma.user.update({
-        where: { id: user.id },
-        data: {},
-      }),
-    ]);
+    const deletedRecord = await db
+      .delete(incomes)
+      .where(and(eq(incomes.id, id), eq(incomes.userId, parseInt(user.id))));
+
+    if (!deletedRecord) {
+      throw new Error("Record not deleted");
+    }
+
+    await db
+      .update(users)
+      .set({
+        incomesCount: sql`${users.incomesCount} - 1`,
+      })
+      .where(eq(users.id, parseInt(user.id)));
 
     // await cookies().set(USER_SESSION_KEY, updatedUser);
 

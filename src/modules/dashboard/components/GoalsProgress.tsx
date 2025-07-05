@@ -5,7 +5,7 @@ import {
   CardTitle,
 } from "@/design-system/components/ui/card";
 import { Progress } from "@/design-system/components/ui/progress";
-import { Goal } from "@prisma/client";
+import { Goal } from "@/modules/records/types";
 import { format } from "date-fns";
 
 export function GoalsProgress() {
@@ -21,9 +21,9 @@ export function GoalsProgress() {
           {goals.map((goal) => (
             <div key={goal.id} className="flex flex-col gap-2">
               <div className="flex justify-between items-center">
-                <span className="font-medium">{goal.title}</span>
+                <span className="font-medium">{goal.name}</span>
                 <span className="text-sm text-muted-foreground">
-                  {format(goal.deadline, "MMM dd")}
+                  {format(goal.createdAt, "MMM dd")}
                 </span>
               </div>
               <div className="flex items-center justify-between text-sm">
