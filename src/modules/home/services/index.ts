@@ -1,4 +1,4 @@
-import { db } from "@/drizzle";
+import { db } from "@/drizzle/db";
 import { incomes } from "@/drizzle/schema";
 import { authorized } from "@/modules/account/utils";
 import { eq } from "drizzle-orm";

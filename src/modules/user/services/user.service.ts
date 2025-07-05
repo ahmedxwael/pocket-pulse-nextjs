@@ -1,4 +1,4 @@
-import { db } from "@/drizzle";
+import { db } from "@/drizzle/db";
 import { users } from "@/drizzle/schema/user";
 import { eq } from "drizzle-orm";
 import type { Account, User } from "next-auth";

@@ -7,6 +7,8 @@ import { ThemeProvider } from "@/providers/ThemeProvider";
 import { appName } from "@/shared/environments";
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
+
+import "@/drizzle/db";
 import "./globals.css";
 
 const montserrat = Montserrat({

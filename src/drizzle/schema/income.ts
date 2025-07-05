@@ -1,11 +1,17 @@
 import { relations } from "drizzle-orm";
-import { integer, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
+import {
+  integer,
+  pgTable,
+  serial,
+  timestamp,
+  varchar,
+} from "drizzle-orm/pg-core";
 import { categories } from "./category";
 import { goals } from "./goal";
 import { users } from "./user";
 
 export const incomes = pgTable("incomes", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: serial("id").primaryKey(),
   userId: integer().notNull(),
   amount: integer().notNull(),
   title: varchar({ length: 255 }).notNull().default(""),

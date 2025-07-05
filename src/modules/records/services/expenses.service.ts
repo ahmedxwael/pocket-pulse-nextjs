@@ -1,4 +1,4 @@
-import { db } from "@/drizzle";
+import { db } from "@/drizzle/db";
 import { expenses, users } from "@/drizzle/schema";
 import { authorized } from "@/modules/account/utils";
 import { asyncHandler } from "@/shared/utils";

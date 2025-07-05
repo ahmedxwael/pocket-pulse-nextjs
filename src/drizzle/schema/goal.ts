@@ -3,6 +3,7 @@ import {
   boolean,
   integer,
   pgTable,
+  serial,
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
@@ -11,7 +12,7 @@ import { incomes } from "./income";
 import { users } from "./user";
 
 export const goals = pgTable("goals", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: serial("id").primaryKey(),
   userId: integer().notNull(),
   title: varchar({ length: 255 }).notNull().default(""),
   targetAmount: integer().notNull().default(0),
