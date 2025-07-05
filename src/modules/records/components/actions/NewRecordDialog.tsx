@@ -21,8 +21,6 @@ import { validateFields } from "@/shared/utils";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { createIncomeAction } from "../../actions";
-import { SelectCategory } from "./SelectCategory";
 
 type InputFields = {
   title: string;
@@ -60,12 +58,12 @@ export function NewRecordDialog() {
 
     try {
       loadingOverlayAtom.start();
-      await createIncomeAction({
-        amount: Number(data.amount),
-        categoryId: Number(data.categoryId),
-        note: data.note,
-        title: data.title,
-      });
+      // await createIncomeAction({
+      //   amount: Number(data.amount),
+      //   categoryId: Number(data.categoryId),
+      //   note: data.note,
+      //   title: data.title,
+      // });
       toastSuccess("Record created successfully");
       setDialogOpen(false);
       reset();
@@ -129,10 +127,10 @@ export function NewRecordDialog() {
             error={errors.amount?.message}
             disabled={isSubmitting}
           />
-          <SelectCategory
+          {/* <SelectCategory
             onChange={(value) => setValue("categoryId", value)}
             disabled={isSubmitting}
-          />
+          /> */}
           {/* <TextareaInput
             id="note"
             label="Note"

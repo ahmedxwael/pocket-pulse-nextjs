@@ -24,8 +24,8 @@ export async function getUserService(email: string) {
   if (!user) {
     return {
       data: null,
-      message: ".",
-      error: ".",
+      message: "User not found",
+      error: "User not found",
     };
   }
 
@@ -107,7 +107,7 @@ export async function updateUserService({
       .returning();
 
     return {
-      data: updatedUser,
+      data: updatedUser[0],
       message: "User updated successfully!",
       error: null,
     };

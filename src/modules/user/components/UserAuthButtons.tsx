@@ -36,12 +36,14 @@ export function UserAuthButtons() {
     }
   };
 
+  console.log("user", user);
+
   return user ? (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="flex items-center gap-2 px-2">
           <Image
-            src={user.image || user.name[0]}
+            src={user.image}
             alt={user.name}
             width={40}
             height={40}
