@@ -2,7 +2,7 @@ import { User } from "@/modules/user/types";
 import { Prisma } from "@prisma/client";
 import { Category } from ".";
 
-export type Record = {
+export type Income = {
   id: string;
   description: string;
   amount: number;
@@ -14,19 +14,19 @@ export type Record = {
   categoryId?: string;
 };
 
-export type RecordResponse = {
-  data: Record | null;
+export type IncomeResponse = {
+  data: Income | null;
   message: string;
   error: any;
 };
 
-export type RecordListResponse = {
-  data: Record[];
+export type IncomesListResponse = {
+  data: Income[];
   message: string;
   error: any;
 };
 
-export type RecordsParams = {
+export type IncomesParams = {
   where?: Prisma.IncomeWhereUniqueInput;
   select?: Prisma.IncomeSelect;
   include?: Prisma.IncomeInclude;
@@ -38,21 +38,21 @@ export type RecordsParams = {
   distinct?: Prisma.IncomeScalarFieldEnum[];
 };
 
-export type RecordGeneralParams = {
+export type IncomesGeneralParams = {
   where?: Prisma.IncomeWhereUniqueInput;
   select?: Prisma.IncomeSelect;
   include?: Prisma.IncomeInclude;
   omit?: Prisma.IncomeOmit;
 };
 
-export type RecordPostParams = {
+export type IncomesPostParams = {
   data: any;
   select?: Prisma.IncomeSelect;
   include?: Prisma.IncomeInclude;
   omit?: Prisma.IncomeOmit;
 };
 
-export type RecordPutParams = {
+export type IncomesPutParams = {
   where?: Prisma.IncomeWhereUniqueInput;
   data: any;
   select?: Prisma.IncomeSelect;

@@ -21,7 +21,7 @@ import { validateFields } from "@/shared/utils";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { createRecordAction } from "../../actions";
+import { createIncomeAction } from "../../actions";
 import { SelectCategory } from "./SelectCategory";
 
 type InputFields = {
@@ -55,9 +55,11 @@ export function NewRecordDialog() {
       return toastError("Insufficient balance");
     }
 
+    console.log("data", data);
+
     try {
-      loadingOverlayAtom.open();
-      await createRecordAction({
+      loadingOverlayAtom.start();
+      await createIncomeAction({
         data: {
           ...data,
           amount: Number(data.amount),
@@ -71,6 +73,7 @@ export function NewRecordDialog() {
       reset();
       router.refresh();
     } catch (error: any) {
+      console.log("error", error);
       toastError(error.message);
     } finally {
       loadingOverlayAtom.close();

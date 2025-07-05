@@ -1,4 +1,4 @@
-import { Category, Record } from "@/modules/records/types";
+import { Category, Expense, Income } from "@/modules/records/types";
 
 export type User = {
   id: string;
@@ -13,7 +13,7 @@ export type User = {
   newUser: boolean;
   incomesCount: number;
   expensesCount: number;
-  records?: Record[];
+  records?: Expense[] | Income[];
   categories?: Category[];
   provider: string;
   emailVerified: Date;

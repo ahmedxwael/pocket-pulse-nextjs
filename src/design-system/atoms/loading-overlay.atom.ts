@@ -8,13 +8,13 @@ export const loadingOverlayAtom = atom({
   },
   actions: {
     start: (data: any) => {
-      loadingOverlayAtom.set({
+      loadingOverlayAtom.merge({
         opened: true,
         data,
       });
     },
     stop: () => {
-      loadingOverlayAtom.set({
+      loadingOverlayAtom.merge({
         opened: false,
         data: null,
       });

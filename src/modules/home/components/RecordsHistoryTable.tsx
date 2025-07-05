@@ -2,16 +2,15 @@
 
 import { DataTable } from "@/design-system/components";
 import { TableCell, TableRow } from "@/design-system/components/ui/table";
-import { Type } from "@/modules/records/components";
-import { Record } from "@/modules/records/types";
+import { Expense, Income } from "@/modules/records/types";
 import { getAt } from "@/shared/utils/get-at";
 import { ColumnDef, Row } from "@tanstack/react-table";
 
 type RecordsHistoryTableProps = {
-  data: Record[];
+  data: Expense[] | Income[];
 };
 
-const columns: ColumnDef<Record>[] = [
+const columns: ColumnDef<Expense | Income>[] = [
   {
     accessorKey: "description",
     header: "Description",
@@ -46,7 +45,7 @@ export function RecordsHistoryTable({ data }: RecordsHistoryTableProps) {
   );
 }
 
-function CustomRow({ row }: { row: Row<Record> }) {
+function CustomRow({ row }: { row: Row<Expense | Income> }) {
   return (
     <TableRow className="p-2 text-center">
       <TableCell className="capitalize font-medium">
@@ -54,9 +53,6 @@ function CustomRow({ row }: { row: Row<Record> }) {
       </TableCell>
       <TableCell>
         {row.original.category ? row.original.category?.name : "-"}
-      </TableCell>
-      <TableCell className="flex justify-center">
-        <Type record={row.original} />
       </TableCell>
       <TableCell>{getAt(row.original.createdAt)}</TableCell>
     </TableRow>

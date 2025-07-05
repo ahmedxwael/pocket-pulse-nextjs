@@ -22,7 +22,7 @@ export const { handlers, signIn } = NextAuth({
 
         await cookies().set(
           USER_SESSION_KEY,
-          data ? only(data as User, USER_ALLOWED_FIELDS) : {}
+          data ? only(data as unknown as User, USER_ALLOWED_FIELDS) : {}
         );
 
         return true;

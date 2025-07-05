@@ -31,6 +31,7 @@ export function useCategories({ init = false }: UseCategoriesProps = {}) {
       setCategories(data || []);
       cachedCategories = data || [];
     } catch (e) {
+      console.log("e", e);
       toastError("Couldn't get the categories");
     } finally {
       setLoading(false);
@@ -59,6 +60,7 @@ export function useCategories({ init = false }: UseCategoriesProps = {}) {
 
       toastSuccess("Category created successfully");
     } catch (e) {
+      console.log("e", e);
       toastError("Couldn't add the category");
     } finally {
       loadingOverlayAtom.stop();
@@ -75,6 +77,7 @@ export function useCategories({ init = false }: UseCategoriesProps = {}) {
       );
       toastSuccess("Category deleted successfully");
     } catch (e) {
+      console.log("e", e);
       toastError("Couldn't delete the category");
     } finally {
       loadingOverlayAtom.stop();

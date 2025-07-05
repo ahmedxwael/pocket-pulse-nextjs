@@ -1,6 +1,6 @@
 import { User } from "@/modules/user/types";
 import { Prisma } from "@prisma/client";
-import { Record } from "./record.types";
+import { Expense, Income } from ".";
 
 export type Category = {
   id: string;
@@ -9,8 +9,8 @@ export type Category = {
   updatedAt: Date;
   createdBy?: User;
   createdById: string;
-  incomes: Record[];
-  expenses: Record[];
+  incomes: Income[];
+  expenses: Expense[];
 };
 
 export type CategoryListResponse = {

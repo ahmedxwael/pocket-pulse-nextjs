@@ -5,7 +5,7 @@ import {
   CardTitle,
 } from "@/design-system/components/ui/card";
 import { Progress } from "@/design-system/components/ui/progress";
-import { Goal } from "@/prisma/app/generated/prisma/client";
+import { Goal } from "@prisma/client";
 import { format } from "date-fns";
 
 export function GoalsProgress() {

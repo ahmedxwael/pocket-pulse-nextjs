@@ -2,7 +2,6 @@
 
 import { SelectInput } from "@/design-system/components";
 import { useCategories } from "@/modules/records/hooks";
-import { NewCategoryDialog } from "./NewCategoryDialog";
 
 type SelectCategoryProps = {
   onChange?: (category: string) => void;
@@ -25,12 +24,11 @@ export function SelectCategory({
     <div className="flex items-center gap-2">
       <SelectInput
         id="category"
-        name="category"
         label="Category"
         disabled={disabled}
         className={className}
         onValueChange={onChange}
-        onOpenChange={load}
+        onInit={load}
         isLoading={loading}
         defaultValue={defaultValue}
         placeholder="Select Category"
@@ -41,7 +39,7 @@ export function SelectCategory({
             value: category.id,
           }))
         }>
-        <NewCategoryDialog />
+        {/* <NewCategoryDialog /> */}
       </SelectInput>
     </div>
   );

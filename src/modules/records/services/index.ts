@@ -1,2 +1,2 @@
 export * from "./categories.service";
-export * from "./records.service";
+export * from "./incomes.service";

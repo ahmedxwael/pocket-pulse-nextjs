@@ -2,21 +2,21 @@ import { authorized } from "@/modules/account/utils";
 import prisma from "@/prisma/config";
 import { asyncHandler } from "@/shared/utils";
 import {
-  Record,
-  RecordListResponse,
-  RecordPostParams,
-  RecordPutParams,
-  RecordResponse,
-  RecordsParams,
+  Income,
+  IncomeResponse,
+  IncomesListResponse,
+  IncomesParams,
+  IncomesPostParams,
+  IncomesPutParams,
 } from "../types";
 
 /**
  * Retrieve records
  */
 export const getIncomesService: (
-  params?: RecordsParams
-) => Promise<RecordListResponse> = await asyncHandler(
-  async (params = {} as RecordsParams) => {
+  params?: IncomesParams
+) => Promise<IncomesListResponse> = await asyncHandler(
+  async (params = {} as IncomesParams) => {
     const { user } = await authorized();
 
     const records = await prisma.income.findMany({
@@ -30,7 +30,7 @@ export const getIncomesService: (
     });
 
     return {
-      data: records as Record[],
+      data: records as Income[],
       message: "Records found successfully",
       error: null,
     };
@@ -41,20 +41,21 @@ export const getIncomesService: (
  * Create a new record
  */
 export const createIncomeService: (
-  params?: RecordPostParams
-) => Promise<RecordResponse> = await asyncHandler(
-  async (params = { data: {} } as RecordPostParams) => {
+  params?: IncomesPostParams
+) => Promise<IncomeResponse> = await asyncHandler(
+  async (params = { data: {} } as IncomesPostParams) => {
     const { data, ...rest } = params;
     const { user } = await authorized();
 
-    const [record, updatedUser] = await prisma.$transaction([
-      prisma.record.create({
+    console.log("data", data);
+
+    const [record] = await prisma.$transaction([
+      prisma.income.create({
         ...rest,
         data: {
           amount: data.amount,
-          categoryId: data.categoryId,
+          // categoryId: data.categoryId,
           description: data.description,
-          type: data.type,
           userId: user.id,
         },
       }),
@@ -79,18 +80,18 @@ export const createIncomeService: (
  */
 export const updateIncomeService: (
   id: string,
-  data: Pick<Record, "description" | "amount" | "categoryId">,
-  params?: RecordPutParams
-) => Promise<RecordResponse> = await asyncHandler(
+  data: Pick<Income, "description" | "amount" | "categoryId">,
+  params?: IncomesPutParams
+) => Promise<IncomeResponse> = await asyncHandler(
   async (
     id: string,
-    data: Pick<Record, "description" | "amount" | "categoryId">,
-    params = {} as RecordPutParams
+    data: Pick<Income, "description" | "amount" | "categoryId">,
+    params = {} as IncomesPutParams
   ) => {
     const { user } = await authorized();
 
-    const [record, updatedUser] = await prisma.$transaction([
-      prisma.record.update({
+    const [record] = await prisma.$transaction([
+      prisma.income.update({
         ...params,
         where: {
           ...(params?.where || {}),
@@ -118,18 +119,14 @@ export const updateIncomeService: (
 /**
  * Delete a record
  */
-export const deleteIncomeService: (id: string) => Promise<RecordResponse> =
+export const deleteIncomeService: (id: string) => Promise<IncomeResponse> =
   await asyncHandler(async (id: string) => {
     const { user } = await authorized();
 
-    const record = await prisma.record.findUnique({
+    const record = await prisma.income.findUnique({
       where: {
         id,
         userId: user.id,
-      },
-      select: {
-        type: true,
-        amount: true,
       },
     });
 
@@ -137,8 +134,8 @@ export const deleteIncomeService: (id: string) => Promise<RecordResponse> =
       throw new Error("Record not found or not authorized");
     }
 
-    const [deletedRecord, updatedUser] = await prisma.$transaction([
-      prisma.record.delete({
+    const [deletedRecord] = await prisma.$transaction([
+      prisma.income.delete({
         where: {
           id,
           userId: user.id,
