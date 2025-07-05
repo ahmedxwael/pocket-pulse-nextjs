@@ -25,7 +25,8 @@ import { createIncomeAction } from "../../actions";
 import { SelectCategory } from "./SelectCategory";
 
 type InputFields = {
-  description: string;
+  title: string;
+  note: string;
   amount: number;
   targetAmount?: number;
   categoryId: string;
@@ -45,7 +46,7 @@ export function NewRecordDialog() {
   } = useForm<InputFields>();
 
   const onSubmit: SubmitHandler<InputFields> = async (data) => {
-    const { errors } = validateFields(data, ["description", "amount"]);
+    const { errors } = validateFields(data, ["title", "note", "amount"]);
 
     if (errors.length > 0) {
       return errors.map((error) => toastError(error.message));
@@ -60,13 +61,10 @@ export function NewRecordDialog() {
     try {
       loadingOverlayAtom.start();
       await createIncomeAction({
-        data: {
-          ...data,
-          amount: Number(data.amount),
-        },
-        include: {
-          category: true,
-        },
+        amount: Number(data.amount),
+        categoryId: Number(data.categoryId),
+        note: data.note,
+        title: data.title,
       });
       toastSuccess("Record created successfully");
       setDialogOpen(false);
@@ -101,18 +99,18 @@ export function NewRecordDialog() {
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
           <TextInput
-            id="description"
-            label="Description"
+            id="title"
+            label="Title"
             placeholder="eg. Birthday gift!"
             required
-            register={register("description", {
-              required: "Description is required",
+            register={register("title", {
+              required: "Title is required",
               minLength: {
                 value: 3,
-                message: "Description must be at least 3 characters",
+                message: "Title must be at least 3 characters",
               },
             })}
-            error={errors.description?.message}
+            error={errors.title?.message}
             disabled={isSubmitting}
           />
           <IntegerInput
@@ -135,6 +133,15 @@ export function NewRecordDialog() {
             onChange={(value) => setValue("categoryId", value)}
             disabled={isSubmitting}
           />
+          {/* <TextareaInput
+            id="note"
+            label="Note"
+            placeholder="eg. Birthday gift!"
+            required
+            register={register("note", {
+              required: "Note is required",
+            })}
+          /> */}
           <SubmitButton
             className="grow sm:grow-0 sm:min-w-[120px]"
             disabled={isSubmitting}
