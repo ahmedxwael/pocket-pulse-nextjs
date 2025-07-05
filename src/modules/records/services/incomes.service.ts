@@ -1,8 +1,6 @@
 import { authorized } from "@/modules/account/utils";
-import { getTransactionUpdates } from "@/modules/user/utils/get-transaction-updates";
-import prisma from "@/prisma/index";
-import { cookies } from "@/shared/config";
-import { asyncHandler, USER_SESSION_KEY } from "@/shared/utils";
+import prisma from "@/prisma/config";
+import { asyncHandler } from "@/shared/utils";
 import {
   Record,
   RecordListResponse,
@@ -62,15 +60,11 @@ export const createIncomeService: (
       }),
       prisma.user.update({
         where: { id: user.id },
-        data: getTransactionUpdates({
-          type: data.type,
-          amount: data.amount,
-          user,
-        }),
+        data: {},
       }),
     ]);
 
-    await cookies().set(USER_SESSION_KEY, updatedUser);
+    // await cookies().set(USER_SESSION_KEY, updatedUser);
 
     return {
       data: record,
@@ -107,14 +101,11 @@ export const updateIncomeService: (
       }),
       prisma.user.update({
         where: { id: user.id },
-        data: getTransactionUpdates({
-          amount: data.amount,
-          user,
-        }),
+        data: {},
       }),
     ]);
 
-    await cookies().set(USER_SESSION_KEY, updatedUser);
+    // await cookies().set(USER_SESSION_KEY, updatedUser);
 
     return {
       data: record,
@@ -155,15 +146,11 @@ export const deleteIncomeService: (id: string) => Promise<RecordResponse> =
       }),
       prisma.user.update({
         where: { id: user.id },
-        data: getTransactionUpdates({
-          amount: record.amount,
-          user,
-          reverse: true,
-        }),
+        data: {},
       }),
     ]);
 
-    await cookies().set(USER_SESSION_KEY, updatedUser);
+    // await cookies().set(USER_SESSION_KEY, updatedUser);
 
     return {
       data: deletedRecord,

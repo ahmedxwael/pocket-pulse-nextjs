@@ -1,6 +1,5 @@
 import { authorized } from "@/modules/account/utils";
-import { getTransactionUpdates } from "@/modules/user/utils/get-transaction-updates";
-import prisma from "@/prisma/index";
+import prisma from "@/prisma/config";
 import { cookies } from "@/shared/config";
 import { asyncHandler, USER_SESSION_KEY } from "@/shared/utils";
 import {
@@ -90,11 +89,7 @@ export const createRecordService: (
       }),
       prisma.user.update({
         where: { id: user.id },
-        data: getTransactionUpdates({
-          type: data.type,
-          amount: data.amount,
-          user,
-        }),
+        data: {},
       }),
     ]);
 
@@ -135,10 +130,7 @@ export const updateRecordService: (
       }),
       prisma.user.update({
         where: { id: user.id },
-        data: getTransactionUpdates({
-          amount: data.amount,
-          user,
-        }),
+        data: {},
       }),
     ]);
 
@@ -183,12 +175,7 @@ export const deleteRecordService: (id: string) => Promise<RecordResponse> =
       }),
       prisma.user.update({
         where: { id: user.id },
-        data: getTransactionUpdates({
-          type: record.type,
-          amount: record.amount,
-          user,
-          reverse: true,
-        }),
+        data: {},
       }),
     ]);
 

@@ -1,9 +1,9 @@
 "use client";
 
+import { loadingOverlayAtom } from "@/design-system/atoms";
 import { toastError, toastSuccess } from "@/design-system/components";
 import {
   IntegerInput,
-  SelectInput,
   SubmitButton,
   TextInput,
 } from "@/design-system/components/Form";
@@ -16,10 +16,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/design-system/components/ui/dialog";
-import { loadingOverlayStore } from "@/design-system/stores";
 import { useUser } from "@/modules/user/hooks";
 import { validateFields } from "@/shared/utils";
-import { Type } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -31,7 +29,6 @@ type InputFields = {
   amount: number;
   targetAmount?: number;
   categoryId: string;
-  type: Type;
 };
 
 export function NewRecordDialog() {
@@ -39,7 +36,6 @@ export function NewRecordDialog() {
 
   const router = useRouter();
   const [dialogOpen, setDialogOpen] = useState(false);
-  const { setLoading } = loadingOverlayStore();
   const {
     handleSubmit,
     formState: { errors, isSubmitting },
@@ -49,22 +45,18 @@ export function NewRecordDialog() {
   } = useForm<InputFields>();
 
   const onSubmit: SubmitHandler<InputFields> = async (data) => {
-    const { errors } = validateFields(data, ["description", "amount", "type"]);
+    const { errors } = validateFields(data, ["description", "amount"]);
 
     if (errors.length > 0) {
       return errors.map((error) => toastError(error.message));
     }
 
-    if (
-      user?.balance !== undefined &&
-      user.balance < Number(data.amount) &&
-      data.type === "EXPENSE"
-    ) {
+    if (user?.balance !== undefined && user.balance < Number(data.amount)) {
       return toastError("Insufficient balance");
     }
 
     try {
-      setLoading(true);
+      loadingOverlayAtom.open();
       await createRecordAction({
         data: {
           ...data,
@@ -81,7 +73,7 @@ export function NewRecordDialog() {
     } catch (error: any) {
       toastError(error.message);
     } finally {
-      setLoading(false);
+      loadingOverlayAtom.close();
     }
   };
 
@@ -134,22 +126,6 @@ export function NewRecordDialog() {
               },
             })}
             error={errors.amount?.message}
-            disabled={isSubmitting}
-          />
-          <SelectInput
-            id="type"
-            label="Type"
-            defaultValue="INCOME"
-            options={[
-              { label: "Income", value: "INCOME" },
-              { label: "Expense", value: "EXPENSE" },
-              { label: "Saving", value: "SAVING" },
-              { label: "Transfer", value: "TRANSFER" },
-              { label: "Allocation", value: "ALLOCATION" },
-            ]}
-            onValueChange={(value) => setValue("type", value as Type)}
-            onInit={(value) => setValue("type", value as Type)}
-            required
             disabled={isSubmitting}
           />
           <SelectCategory

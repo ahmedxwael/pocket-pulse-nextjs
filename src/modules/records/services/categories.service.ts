@@ -1,5 +1,5 @@
 import { authorized } from "@/modules/account/utils";
-import prisma from "@/prisma/index";
+import prisma from "@/prisma/config";
 import { asyncHandler } from "@/shared/utils";
 import {
   CategoryGeneralParams,

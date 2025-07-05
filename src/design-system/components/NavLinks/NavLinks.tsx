@@ -1,9 +1,18 @@
 "use client";
 
+import { Button, buttonVariants } from "@/design-system/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/design-system/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { URLS } from "@/shared/urls";
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 
 type NavLinksProps = {
   className?: string;
@@ -24,8 +33,8 @@ const navLinks = [
     href: URLS.transactions,
     icon: "transactions",
     subItems: [
-      { name: "Incomes", href: `${URLS.transactions}/incomes` },
-      { name: "Expenses", href: `${URLS.transactions}/expenses` },
+      { name: "Incomes", href: URLS.transactions.incomes },
+      { name: "Expenses", href: URLS.transactions.expenses },
     ],
   },
   {
@@ -46,37 +55,58 @@ const navLinks = [
 ];
 
 export function NavLinks({ className, styles }: NavLinksProps) {
+  const router = useRouter();
   const pathname = usePathname();
+
+  const [open, setOpen] = useState(false);
 
   return (
     <ul className={cn("flex items-center gap-6", className, styles?.root)}>
       {navLinks.map((link) => {
         const active = link.href === pathname;
-        const isActiveSection = link.subItems
-          ? link.subItems.some((sub) => sub.href === pathname)
-          : false;
 
         return (
           <li key={link.name} className="w-full">
-            <Link
-              href={link.href}
-              className={cn(
-                "flex items-center gap-2 capitalize font-medium p-2 transition-colors text-muted-foreground hover:text-primary",
-                active || isActiveSection ? "text-primary" : "",
-                styles?.link
-              )}>
-              <span className="w-4 h-4" aria-hidden="true">
-                {link.icon}
-              </span>
-              {link.name}
-              {link.subItems && (
-                <span className="ml-1 text-xs">
-                  {link.subItems.find((sub) => sub.href === pathname)
-                    ? "↓"
-                    : "→"}
-                </span>
-              )}
-            </Link>
+            {link.subItems ? (
+              <DropdownMenu open={open} onOpenChange={setOpen}>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="link"
+                    className={cn("hover:no-underline hover:text-primary", {
+                      "text-primary": active,
+                      "text-muted-foreground": !active,
+                    })}>
+                    {link.name}
+                    <ChevronDown
+                      className={cn("transition", { "rotate-180": open })}
+                    />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {link.subItems.map((subItem) => (
+                    <DropdownMenuItem
+                      key={subItem.name}
+                      className="cursor-pointer hover:text-primary"
+                      onClick={() => router.push(subItem.href)}>
+                      {subItem.name}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link
+                href={link.href}
+                className={cn(
+                  buttonVariants({ variant: "link" }),
+                  cn({
+                    "text-primary": active,
+                    "text-muted-foreground hover:text-primary": !active,
+                  }),
+                  styles?.link
+                )}>
+                {link.name}
+              </Link>
+            )}
           </li>
         );
       })}

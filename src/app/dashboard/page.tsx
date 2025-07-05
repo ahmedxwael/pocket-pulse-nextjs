@@ -5,21 +5,12 @@ import {
   CardTitle,
 } from "@/design-system/components/ui/card";
 
-import { getExpensesAction, getIncomesAction } from "@/modules/records/actions";
-import { getCurrentUser } from "@/modules/user/actions";
-
 export default async function DashboardPage() {
-  const user = await getCurrentUser();
   // const today = new Date();
   // const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
   // const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 
-  const [incomes, expenses] = await Promise.all([
-    getIncomesAction({}),
-    getExpensesAction({}),
-  ]);
-
-  const transactions = [...incomes.data, ...expenses.data];
+  // const transactions: Record[] = [];
 
   return (
     <div className="space-y-4">
@@ -29,9 +20,9 @@ export default async function DashboardPage() {
             <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            {/* <div className="text-2xl font-bold">
               {user?.currency} {user?.balance?.toFixed(2)}
-            </div>
+            </div> */}
           </CardContent>
         </Card>
 
@@ -40,10 +31,10 @@ export default async function DashboardPage() {
             <CardTitle className="text-sm font-medium">This Month</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            {/* <div className="text-2xl font-bold">
               {user?.currency}{" "}
               {transactions.reduce((sum, t) => sum + t.amount, 0).toFixed(2)}
-            </div>
+            </div> */}
           </CardContent>
         </Card>
       </div>

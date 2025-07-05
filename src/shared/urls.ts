@@ -7,7 +7,11 @@ export const URLS = {
   settings: "/settings",
   privacyPolicy: "/privacy-policy",
   termsOfService: "/terms-of-service",
-  transactions: "/transactions",
+  transactions: {
+    root: "/transactions",
+    incomes: "/transactions/incomes",
+    expenses: "/transactions/expenses",
+  },
   goals: "/goals",
   categories: "/categories",
 };

@@ -1,5 +1,6 @@
 "use client";
 
+import { loadingOverlayAtom } from "@/design-system/atoms";
 import { toastSuccess } from "@/design-system/components";
 import { Button, buttonVariants } from "@/design-system/components/ui/button";
 import {
@@ -8,31 +9,29 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/design-system/components/ui/dropdown-menu";
-import { loadingOverlayStore } from "@/design-system/stores";
 import { cn } from "@/lib/utils";
 import { signOutAction as signOut } from "@/modules/auth/actions";
+import { UserContext } from "@/providers";
 import { URLS } from "@/shared/urls";
 import { LogOutIcon, UserIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect, useRouter } from "next/navigation";
-import { User } from "../types";
+import { useContext } from "react";
 
-type UserAuthButtonsProps = {
-  user: User | null;
-};
+export function UserAuthButtons() {
+  const user = useContext(UserContext);
 
-export function UserAuthButtons({ user }: UserAuthButtonsProps) {
   const router = useRouter();
-  const { loading, setLoading } = loadingOverlayStore();
+  const loading = loadingOverlayAtom.use("opened");
 
   const handleSignOut = async () => {
     try {
-      setLoading(true);
+      loadingOverlayAtom.start();
       await signOut();
     } finally {
       toastSuccess("Signed out successfully");
-      setLoading(false);
+      loadingOverlayAtom.stop();
       redirect(URLS.signIn);
     }
   };
@@ -52,15 +51,17 @@ export function UserAuthButtons({ user }: UserAuthButtonsProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="flex flex-col">
-        <DropdownMenuItem onClick={() => router.push(URLS.profile)}>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => router.push(URLS.profile)}>
           <UserIcon /> Profile
         </DropdownMenuItem>
         <Button
           variant="ghost"
           onClick={handleSignOut}
           disabled={loading}
-          className="justify-start p-2 dark:hover:bg-accent">
-          <LogOutIcon className="text-muted-foreground" /> Sign out
+          className="justify-start p-2 text-destructive dark:hover:bg-destructive ">
+          <LogOutIcon /> Sign out
         </Button>
       </DropdownMenuContent>
     </DropdownMenu>

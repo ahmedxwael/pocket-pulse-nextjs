@@ -27,35 +27,35 @@ export type RecordListResponse = {
 };
 
 export type RecordsParams = {
-  where?: Prisma.RecordWhereUniqueInput;
-  select?: Prisma.RecordSelect;
-  include?: Prisma.RecordInclude;
-  omit?: Prisma.RecordOmit;
-  orderBy?: Prisma.RecordOrderByWithRelationInput;
+  where?: Prisma.IncomeWhereUniqueInput;
+  select?: Prisma.IncomeSelect;
+  include?: Prisma.IncomeInclude;
+  omit?: Prisma.IncomeOmit;
+  orderBy?: Prisma.IncomeOrderByWithRelationInput;
   skip?: number;
   take?: number;
-  cursor?: Prisma.RecordWhereUniqueInput;
-  distinct?: Prisma.RecordScalarFieldEnum[];
+  cursor?: Prisma.IncomeWhereUniqueInput;
+  distinct?: Prisma.IncomeScalarFieldEnum[];
 };
 
 export type RecordGeneralParams = {
-  where?: Prisma.RecordWhereUniqueInput;
-  select?: Prisma.RecordSelect;
-  include?: Prisma.RecordInclude;
-  omit?: Prisma.RecordOmit;
+  where?: Prisma.IncomeWhereUniqueInput;
+  select?: Prisma.IncomeSelect;
+  include?: Prisma.IncomeInclude;
+  omit?: Prisma.IncomeOmit;
 };
 
 export type RecordPostParams = {
   data: any;
-  select?: Prisma.RecordSelect;
-  include?: Prisma.RecordInclude;
-  omit?: Prisma.RecordOmit;
+  select?: Prisma.IncomeSelect;
+  include?: Prisma.IncomeInclude;
+  omit?: Prisma.IncomeOmit;
 };
 
 export type RecordPutParams = {
-  where?: Prisma.RecordWhereUniqueInput;
+  where?: Prisma.IncomeWhereUniqueInput;
   data: any;
-  select?: Prisma.RecordSelect;
-  include?: Prisma.RecordInclude;
-  omit?: Prisma.RecordOmit;
+  select?: Prisma.IncomeSelect;
+  include?: Prisma.IncomeInclude;
+  omit?: Prisma.IncomeOmit;
 };

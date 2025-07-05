@@ -2,7 +2,6 @@
 
 import { DataTable } from "@/design-system/components";
 import { TableCell, TableRow } from "@/design-system/components/ui/table";
-import { cn } from "@/lib/utils";
 import { Type } from "@/modules/records/components";
 import { Record } from "@/modules/records/types";
 import { getAt } from "@/shared/utils/get-at";
@@ -52,14 +51,6 @@ function CustomRow({ row }: { row: Row<Record> }) {
     <TableRow className="p-2 text-center">
       <TableCell className="capitalize font-medium">
         {row.original.description}
-      </TableCell>
-      <TableCell
-        className={cn(
-          row.original.type === "EXPENSE" ? "text-red-500" : "text-green-500"
-        )}>
-        {row.original.type === "EXPENSE"
-          ? `- $${row.original.amount}`
-          : `$${row.original.amount}`}
       </TableCell>
       <TableCell>
         {row.original.category ? row.original.category?.name : "-"}

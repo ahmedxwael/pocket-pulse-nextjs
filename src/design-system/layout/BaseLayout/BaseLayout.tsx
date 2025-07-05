@@ -18,7 +18,7 @@ export function BaseLayout({ children }: BaseLayoutProps) {
   }
 
   return (
-    <main className="relative">
+    <main className="relative min-h-screen">
       <Header />
       <Toaster position="top-right" closeButton />
       {children}

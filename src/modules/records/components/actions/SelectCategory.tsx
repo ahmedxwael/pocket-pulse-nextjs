@@ -25,11 +25,11 @@ export function SelectCategory({
     <div className="flex items-center gap-2">
       <SelectInput
         id="category"
+        name="category"
         label="Category"
         disabled={disabled}
         className={className}
         onValueChange={onChange}
-        onInit={(value) => onChange?.(value)}
         onOpenChange={load}
         isLoading={loading}
         defaultValue={defaultValue}

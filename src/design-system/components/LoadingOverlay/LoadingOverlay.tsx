@@ -1,11 +1,11 @@
 "use client";
 
-import { loadingOverlayStore } from "@/design-system/stores";
+import { loadingOverlayAtom } from "@/design-system/atoms";
 import { Loader } from "lucide-react";
 import { useEffect } from "react";
 
 export function LoadingOverlay() {
-  const opened = loadingOverlayStore((state) => state.loading);
+  const opened = loadingOverlayAtom.use("opened");
 
   useEffect(() => {
     if (!opened || !window || !document) {

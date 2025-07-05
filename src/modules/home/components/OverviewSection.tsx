@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils";
-import { getCurrentUser } from "@/modules/user/actions";
-import { OverviewData, overviewData } from "../data";
+import { OverviewData } from "../data";
 
 const variants = {
   default: "bg-primary/20 text-primary",
@@ -9,28 +8,7 @@ const variants = {
 };
 
 export async function OverviewSection() {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    return null;
-  }
-
-  const data: OverviewData[] = overviewData({
-    income: user.incomesCount,
-    expense: user.expensesCount,
-    balance: user.balance,
-  });
-
-  return (
-    <div className="flex flex-col gap-4">
-      <h2 className="text-2xl font-bold mb-4">Overview</h2>
-      <div className="flex gap-4 flex-col sm:flex-row">
-        {data.map((item) => (
-          <OverviewItem key={item.title} {...item} />
-        ))}
-      </div>
-    </div>
-  );
+  return <div className="flex flex-col gap-4"></div>;
 }
 
 function OverviewItem({

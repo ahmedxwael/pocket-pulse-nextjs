@@ -1,16 +1,9 @@
-import prisma from "@/prisma/index";
+import prisma from "@/prisma/config";
 
 export async function getOverviewRecords() {
-  const records = await prisma.record.findMany({
+  const records = await prisma.income.findMany({
     where: {
-      OR: [
-        {
-          type: "INCOME",
-        },
-        {
-          type: "EXPENSE",
-        },
-      ],
+      userId: "",
     },
   });
 

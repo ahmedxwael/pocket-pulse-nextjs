@@ -1,4 +1,4 @@
-import prisma from "@/prisma/index";
+import prisma from "@/prisma/config";
 import type { Account, User } from "next-auth";
 
 /**

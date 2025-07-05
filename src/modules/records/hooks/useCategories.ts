@@ -1,7 +1,7 @@
 "use client";
 
+import { loadingOverlayAtom } from "@/design-system/atoms";
 import { toastError, toastSuccess } from "@/design-system/components";
-import { loadingOverlayStore } from "@/design-system/stores";
 import { useEffect, useState } from "react";
 import {
   createCategoryAction,
@@ -17,13 +17,11 @@ type UseCategoriesProps = {
 let cachedCategories: Category[] = [];
 
 export function useCategories({ init = false }: UseCategoriesProps = {}) {
-  const { setLoading: setLoadingOverlay } = loadingOverlayStore();
-
   const [categories, setCategories] = useState<Category[]>(cachedCategories);
   const [loading, setLoading] = useState(false);
 
   const load = async () => {
-    if (cachedCategories.length > 0) {
+    if (cachedCategories.length === categories.length) {
       return;
     }
 
@@ -41,7 +39,7 @@ export function useCategories({ init = false }: UseCategoriesProps = {}) {
 
   const add = async (category: Pick<Category, "name" | "createdById">) => {
     try {
-      setLoadingOverlay(true);
+      loadingOverlayAtom.start();
       const { data } = await createCategoryAction({
         data: category,
       });
@@ -63,13 +61,13 @@ export function useCategories({ init = false }: UseCategoriesProps = {}) {
     } catch (e) {
       toastError("Couldn't add the category");
     } finally {
-      setLoadingOverlay(false);
+      loadingOverlayAtom.stop();
     }
   };
 
   const remove = async (id: string) => {
     try {
-      setLoadingOverlay(true);
+      loadingOverlayAtom.start();
       await deleteCategoryAction(id);
       setCategories((prev) => prev.filter((category) => category.id !== id));
       cachedCategories = cachedCategories.filter(
@@ -79,7 +77,7 @@ export function useCategories({ init = false }: UseCategoriesProps = {}) {
     } catch (e) {
       toastError("Couldn't delete the category");
     } finally {
-      setLoadingOverlay(false);
+      loadingOverlayAtom.stop();
     }
   };
 

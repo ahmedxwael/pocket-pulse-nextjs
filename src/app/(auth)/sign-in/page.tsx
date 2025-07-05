@@ -1,4 +1,3 @@
-import { reverseGuardedRoute } from "@/lib";
 import { SignInPageContent } from "@/modules/user/pages/SignInPageContent";
 import { appName } from "@/shared/environments";
 
@@ -8,7 +7,7 @@ export const metadata = {
 };
 
 export default async function SignInPage() {
-  await reverseGuardedRoute();
+  // await reverseGuardedRoute();
 
   return <SignInPageContent />;
 }

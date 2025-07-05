@@ -1,5 +1,6 @@
 "use client";
 
+import { loadingOverlayAtom } from "@/design-system/atoms";
 import { toastError, toastSuccess } from "@/design-system/components";
 import {
   IntegerInput,
@@ -15,7 +16,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/design-system/components/ui/card";
-import { loadingOverlayStore } from "@/design-system/stores";
 import { signOutAction as signOut } from "@/modules/auth/actions";
 import { updateUser } from "@/modules/user/actions";
 import { useUser } from "@/modules/user/hooks";
@@ -32,7 +32,6 @@ type InputFields = {
 };
 
 export function NewUserLayout() {
-  const { setLoading } = loadingOverlayStore();
   const { user, loading } = useUser({ init: true });
   const router = useRouter();
 
@@ -52,7 +51,7 @@ export function NewUserLayout() {
     if (!user) return;
 
     try {
-      setLoading(true);
+      loadingOverlayAtom.start();
       await updateUser(user.id, {
         ...data,
         balance: Number(data.balance),
@@ -70,16 +69,16 @@ export function NewUserLayout() {
         description: "There was an error updating your profile.",
       });
     } finally {
-      setLoading(false);
+      loadingOverlayAtom.stop();
     }
   };
 
   const handleLogout = async () => {
-    setLoading(true);
+    loadingOverlayAtom.start();
     try {
       await signOut();
     } finally {
-      setLoading(false);
+      loadingOverlayAtom.stop();
       redirect(URLS.signIn);
     }
   };

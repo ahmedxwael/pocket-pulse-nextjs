@@ -1,7 +1,9 @@
 "use server";
 
-import { getOverviewRecords } from "../services";
-
 export async function getOverviewAction() {
-  return await getOverviewRecords();
+  return {
+    data: [],
+    message: "No records found",
+    error: "No records found",
+  };
 }
