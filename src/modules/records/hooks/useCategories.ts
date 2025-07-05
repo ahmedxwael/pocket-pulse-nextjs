@@ -38,11 +38,11 @@ export function useCategories({ init = false }: UseCategoriesProps = {}) {
     }
   };
 
-  const add = async (category: Pick<Category, "name" | "createdById">) => {
+  const add = async (category: Pick<Category, "name">) => {
     try {
       loadingOverlayAtom.start();
       const { data } = await createCategoryAction({
-        data: category,
+        name: category.name,
       });
 
       if (!data) {
